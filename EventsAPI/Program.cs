@@ -1,4 +1,7 @@
 
+using EventsAPI.Data;
+using Microsoft.EntityFrameworkCore;
+
 namespace EventsAPI
 {
     public class Program
@@ -10,6 +13,10 @@ namespace EventsAPI
             builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+
+            builder.Services.AddDbContext<ApplicationContext>(options =>
+                options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"))
+            );
 
             var app = builder.Build();
 
