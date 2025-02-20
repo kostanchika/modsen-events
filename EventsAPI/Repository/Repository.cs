@@ -15,7 +15,7 @@ namespace EventsAPI.Repository
     public class Repository<T> : IRepository<T> where T : class
     {
         private readonly ApplicationContext _context;
-        private readonly DbSet<T> _dbSet;
+        protected readonly DbSet<T> _dbSet;
         public Repository(ApplicationContext context)
         {
             _context = context;
