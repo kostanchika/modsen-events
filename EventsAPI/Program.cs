@@ -1,5 +1,6 @@
 
 using EventsAPI.Data;
+using EventsAPI.Repository;
 using Microsoft.EntityFrameworkCore;
 
 namespace EventsAPI
@@ -17,6 +18,8 @@ namespace EventsAPI
             builder.Services.AddDbContext<ApplicationContext>(options =>
                 options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"))
             );
+
+            builder.Services.AddScoped<IUserRepository, UserRepository>();
 
             var app = builder.Build();
 
