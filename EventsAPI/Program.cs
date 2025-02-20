@@ -1,5 +1,6 @@
 
 using EventsAPI.Data;
+using EventsAPI.Mappers;
 using EventsAPI.Repository;
 using EventsAPI.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -24,6 +25,11 @@ namespace EventsAPI
             );
 
             builder.Services.AddScoped<IUserRepository, UserRepository>();
+
+            builder.Services.AddAutoMapper(cfg =>
+            {
+                cfg.AddProfile<UserMapper>();
+            });
 
             builder.Services.AddScoped<TokenService>();
 
