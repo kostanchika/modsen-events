@@ -1,8 +1,12 @@
 
 using EventsAPI.Data;
 using EventsAPI.Mappers;
+using EventsAPI.Models;
 using EventsAPI.Repository;
 using EventsAPI.Services;
+using EventsAPI.Validators;
+using FluentValidation;
+using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -30,6 +34,10 @@ namespace EventsAPI
             {
                 cfg.AddProfile<UserMapper>();
             });
+
+            builder.Services.AddFluentValidationAutoValidation();
+            builder.Services.AddScoped<IValidator<RegisterModel>, RegisteringUserValidator>();
+            builder.Services.AddScoped<IValidator<LoginModel>, LoginingUserValidator>();
 
             builder.Services.AddScoped<TokenService>();
 
