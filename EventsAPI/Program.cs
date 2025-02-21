@@ -29,6 +29,7 @@ namespace EventsAPI
             );
 
             builder.Services.AddScoped<IUserRepository, UserRepository>();
+            builder.Services.AddScoped<IEventRepository, EventRepository>();
 
             builder.Services.AddAutoMapper(cfg =>
             {
