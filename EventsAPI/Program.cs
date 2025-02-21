@@ -42,6 +42,7 @@ namespace EventsAPI
             builder.Services.AddScoped<IValidator<LoginModel>, LoginingUserValidator>();
 
             builder.Services.AddScoped<TokenService>();
+            builder.Services.AddScoped<EmailSender>();
 
             builder.Services.AddAuthentication(options =>
             {
