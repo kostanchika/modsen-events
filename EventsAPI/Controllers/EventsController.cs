@@ -42,6 +42,8 @@ namespace EventsAPI.Controllers
         }
 
         [HttpGet("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetSingleEvent(int id)
         {
             var eventItem = await _eventRepository.GetByIdAsync(id);
@@ -55,6 +57,8 @@ namespace EventsAPI.Controllers
 
         [HttpPost]
         [Authorize(Policy = "AdminPolicy")]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> CreateEvent([FromForm] CreateEventModel creatingEvent)
         {
             var validationResult = await _creatingEventValidator.ValidateAsync(creatingEvent);
@@ -80,6 +84,9 @@ namespace EventsAPI.Controllers
 
         [HttpPut("{id}")]
         [Authorize(Policy = "AdminPolicy")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> ChangeEvent(int id, [FromForm] ChangeEventModel updatingEvent)
         {
             var eventItem = await _eventRepository.GetByIdAsync(id);
@@ -117,6 +124,9 @@ namespace EventsAPI.Controllers
 
         [HttpPut("{id}/register")]
         [Authorize]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
 
         public async Task<IActionResult> RegisterForEvent(int id)
         {
@@ -156,6 +166,9 @@ namespace EventsAPI.Controllers
 
         [HttpPut("{id}/unregister")]
         [Authorize]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> UnregisterForEvent(int id)
         {
             var login = User?.Identity?.Name;
@@ -189,6 +202,7 @@ namespace EventsAPI.Controllers
 
         [HttpDelete("{id}")]
         [Authorize(Policy = "AdminPolicy")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
         public async Task<IActionResult> Delete(int id)
         {
             await _eventRepository.DeleteAsync(id);
