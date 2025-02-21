@@ -34,6 +34,7 @@ namespace EventsAPI
             builder.Services.AddAutoMapper(cfg =>
             {
                 cfg.AddProfile<UserMapper>();
+                cfg.AddProfile<EventMapper>();
             });
 
             builder.Services.AddFluentValidationAutoValidation();
