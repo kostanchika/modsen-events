@@ -28,7 +28,7 @@ namespace EventsAPI.Middlewares
             context.Response.ContentType = "application/json";
             context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
 
-            return context.Response.WriteAsync("Произошла ошибка. Попробуйте позже");
+            return context.Response.WriteAsync(exception.Message);
         }
     }
 
