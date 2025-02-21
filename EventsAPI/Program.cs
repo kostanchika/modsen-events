@@ -1,6 +1,7 @@
 
 using EventsAPI.Data;
 using EventsAPI.Mappers;
+using EventsAPI.Middlewares;
 using EventsAPI.Models;
 using EventsAPI.Repository;
 using EventsAPI.Services;
@@ -79,6 +80,8 @@ namespace EventsAPI
 
 
             app.MapControllers();
+
+            app.UseMiddleware<ExceptionHandlingMiddleware>();
 
             app.Run();
         }
