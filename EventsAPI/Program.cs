@@ -46,6 +46,7 @@ namespace EventsAPI
 
             builder.Services.AddScoped<TokenService>();
             builder.Services.AddScoped<ImageService>();
+            builder.Services.AddScoped<EventsService>();
             builder.Services.AddScoped<EmailSender>();
 
             builder.Services.AddAuthentication(options =>
