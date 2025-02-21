@@ -45,6 +45,7 @@ namespace EventsAPI
             builder.Services.AddScoped<IValidator<ChangeEventModel>, ChangeEventValidator>();
 
             builder.Services.AddScoped<TokenService>();
+            builder.Services.AddScoped<ImageService>();
             builder.Services.AddScoped<EmailSender>();
 
             builder.Services.AddAuthentication(options =>
@@ -80,6 +81,7 @@ namespace EventsAPI
 
             app.UseAuthorization();
 
+            app.UseStaticFiles();
 
             app.MapControllers();
 
