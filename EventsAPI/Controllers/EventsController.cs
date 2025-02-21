@@ -13,6 +13,7 @@ namespace EventsAPI.Controllers
     public class EventsController : ControllerBase
     {
         private readonly IEventRepository _eventRepository;
+        private readonly IUserRepository _userRepository;
         private readonly IMapper _mapper;
         private readonly IValidator<CreateEventModel> _creatingEventValidator;
         private readonly IValidator<ChangeEventModel> _changingEventValidator;
@@ -20,6 +21,7 @@ namespace EventsAPI.Controllers
         private readonly EventsService _eventService;
         public EventsController(
             IEventRepository eventRepository, 
+            IUserRepository userRepository,
             IMapper mapper, 
             IValidator<CreateEventModel> creatingEventValidator,
             IValidator<ChangeEventModel> changingEventValidator,
@@ -28,6 +30,7 @@ namespace EventsAPI.Controllers
         )
         {
             _eventRepository = eventRepository;
+            _userRepository = userRepository;
             _mapper = mapper;
             _creatingEventValidator = creatingEventValidator;
             _changingEventValidator = changingEventValidator;
@@ -215,5 +218,26 @@ namespace EventsAPI.Controllers
             return NoContent();
         }
 
+        [HttpGet("my")]
+        [Authorize]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetUserEvents()
+        {
+            var login = User?.Identity?.Name;
+            if (login == null)
+            {
+                return Unauthorized();
+            }
+
+            var userWithEvents = await _userRepository.GetByLoginIncludeEventsAsync(login);
+            if (userWithEvents == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(userWithEvents.Events);
+        }
     }
 }

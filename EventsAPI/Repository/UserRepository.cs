@@ -7,6 +7,7 @@ namespace EventsAPI.Repository
     public interface IUserRepository : IRepository<User>
     {
         Task<User?> GetByLoginAsync(string login);
+        Task<User?> GetByLoginIncludeEventsAsync(string login);
     }
 
     public class UserRepository : Repository<User>, IUserRepository
@@ -16,6 +17,11 @@ namespace EventsAPI.Repository
         public async Task<User?> GetByLoginAsync(string login)
         {
             return await _dbSet.FirstOrDefaultAsync(u => u.Login == login);
+        }
+
+        public async Task<User?> GetByLoginIncludeEventsAsync(string login)
+        {
+            return await _dbSet.Include(u => u.Events).FirstOrDefaultAsync(u => u.Login == login);
         }
     }
 }
