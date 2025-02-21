@@ -8,6 +8,7 @@ namespace EventsAPI.Repository
     {
         new Task<Event?> GetByIdAsync(int id);
         IEnumerable<Event> GetAllEventsWithFilters(GetEventsModel model);
+        int GetTotalPages(int pageSize);
     }
     public class EventRepository : Repository<Event>, IEventRepository
     {
@@ -18,6 +19,16 @@ namespace EventsAPI.Repository
         }
         public IEnumerable<Event> GetAllEventsWithFilters(GetEventsModel model)
         {
+            if (model.Page <= 0 || model.PageSize <= 0)
+            {
+                throw new ArgumentException("Номер и размер страницы должны быть больше 0");
+            }
+
+            if (model.PageSize > 100)
+            {
+                throw new ArgumentException("Размер страницы не может быть больше 100");
+            }
+
             var query = _dbSet.AsQueryable();
 
             if (model.Name != null)
@@ -40,7 +51,24 @@ namespace EventsAPI.Repository
                 query = query.Where(e => e.Category == model.Category);
             }
 
-            return query.AsEnumerable();
+            return query.AsEnumerable().Skip((model.Page - 1) * model.PageSize).Take(model.PageSize);
         }
+
+        public int GetTotalPages(int pageSize)
+        {
+            if (pageSize <= 0)
+            {
+                throw new ArgumentException("Размер страницы должен быть больше 0");
+            }
+
+            if (pageSize > 100)
+            {
+                throw new ArgumentException("Размер страницы не может быть больше 100");
+            }
+
+            int totalItems = _dbSet.Count();
+            return (int)Math.Ceiling((double)totalItems / pageSize);
+        }
+
     }
 }

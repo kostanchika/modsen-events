@@ -36,9 +36,15 @@ namespace EventsAPI.Controllers
         }
 
         [HttpGet]
-        public IEnumerable<Event> GetAllEvents([FromQuery] GetEventsModel request)
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public IActionResult GetAllEvents([FromQuery] GetEventsModel request)
         {
-            return _eventRepository.GetAllEventsWithFilters(request);
+            return Ok(
+                    new { 
+                        Events = _eventRepository.GetAllEventsWithFilters(request),
+                        Pages = _eventRepository.GetTotalPages(request.PageSize) 
+                    }
+                );
         }
 
         [HttpGet("{id}")]

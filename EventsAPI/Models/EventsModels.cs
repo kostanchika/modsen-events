@@ -24,6 +24,8 @@
         DateTime? DateFrom,
         DateTime? DateTo,
         string? Location,
-        EventCategories? Category
+        EventCategories? Category,
+        int Page,
+        int PageSize
     );
 }
