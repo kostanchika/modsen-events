@@ -41,6 +41,8 @@ namespace EventsAPI
             builder.Services.AddFluentValidationAutoValidation();
             builder.Services.AddScoped<IValidator<RegisterModel>, RegisteringUserValidator>();
             builder.Services.AddScoped<IValidator<LoginModel>, LoginingUserValidator>();
+            builder.Services.AddScoped<IValidator<CreateEventModel>, CreateEventValidator>();
+            builder.Services.AddScoped<IValidator<ChangeEventModel>, ChangeEventValidator>();
 
             builder.Services.AddScoped<TokenService>();
             builder.Services.AddScoped<EmailSender>();
