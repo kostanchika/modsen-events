@@ -47,3 +47,7 @@ export type FilterProps = {
   filters: GetEventParams;
   setFilters: (filters: GetEventParams) => void;
 };
+
+export type EventPageProps = {
+  event: EventType;
+};

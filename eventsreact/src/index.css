@@ -218,3 +218,15 @@ nav ul li button {
 .filters label input, .filters select {
   height: 30px;
 }
+
+.single-event img {
+  background-color: #f9f9f9;
+  width: 50%;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.single-event__participate {
+  float: right;
+  width: 40%;
+}
