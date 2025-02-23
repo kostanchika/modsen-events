@@ -33,7 +33,11 @@ const Filters = (props: FilterProps) => {
   const generateCategories = () => {
     const options = [];
     for (let i = EventCategories.Unspecified; i < EventCategories.Gaming; i++) {
-      options.push(<option value={i}>{getEventCategoryText(i)}</option>);
+      options.push(
+        <option key={i} value={i}>
+          {getEventCategoryText(i)}
+        </option>
+      );
     }
     return options;
   };
