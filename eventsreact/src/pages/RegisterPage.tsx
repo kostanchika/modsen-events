@@ -1,6 +1,6 @@
 import { FormEventHandler, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { toast, ToastContainer } from 'react-toastify';
+import { toast } from 'react-toastify';
 import axios from '../axiosConfig.ts';
 import { AxiosError } from 'axios';
 
@@ -125,8 +125,6 @@ const RegisterPage = () => {
           Перейти к авторизации
         </button>
       </form>
-
-      <ToastContainer />
     </div>
   );
 };

@@ -1,7 +1,7 @@
 import { FormEventHandler, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from '../axiosConfig.ts';
-import { toast, ToastContainer } from 'react-toastify';
+import { toast } from 'react-toastify';
 import { AxiosError } from 'axios';
 
 const LoginPage = () => {
@@ -69,7 +69,6 @@ const LoginPage = () => {
           Перейти к регистрации
         </button>
       </form>
-      <ToastContainer />
     </div>
   );
 };
