@@ -57,7 +57,7 @@ namespace EventsAPI.Controllers
                 return NotFound();
             }
 
-            return Ok(eventItem);
+            return Ok(_mapper.Map<GetEventsResponse>(eventItem));
         }
 
         [HttpPost]
@@ -217,7 +217,7 @@ namespace EventsAPI.Controllers
                 return NotFound();
             }
 
-            return Ok(userWithEvents.Events);
+            return Ok(userWithEvents.Events.Select(_mapper.Map<GetEventsResponse>));
         }
     }
 }
