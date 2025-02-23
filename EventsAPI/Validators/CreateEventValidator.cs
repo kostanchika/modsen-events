@@ -14,6 +14,8 @@ namespace EventsAPI.Validators
                 .WithMessage("Максимальная длина имени события - 100 символов");
 
             RuleFor(x => x.Description)
+                .NotEmpty()
+                .WithMessage("Описание события не может быть пустым")
                 .MaximumLength(500)
                 .WithMessage("Максимальная длина описания события - 500 символов");
 
