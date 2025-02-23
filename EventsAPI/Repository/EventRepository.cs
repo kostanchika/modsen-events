@@ -46,6 +46,11 @@ namespace EventsAPI.Repository
                 query = query.Where(e => e.EventDateTime <= model.DateTo);
             }
 
+            if (model.Location != null)
+            {
+                query = query.Where(e => e.Location.Contains(model.Location));
+            }
+
             if (model.Category.HasValue && model.Category.Value != EventCategories.Unspecified)
             {
                 query = query.Where(e => e.Category == model.Category);
