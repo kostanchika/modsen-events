@@ -7,7 +7,8 @@ namespace EventsAPI.Mappers
     {
         public EventMapper()
         {
-            CreateMap<CreateEventModel, Event>();
+            CreateMap<CreateEventModel, Event>()
+                .ForMember(dest => dest.EventDateTime, opt => opt.MapFrom(src => src.EventDateTime.ToUniversalTime()));
             CreateMap<Event, GetEventsResponse>()
                 .ForMember(dest => dest.CurrentParticipants, opt => opt.MapFrom(src => src.Participants.Count));
         }
