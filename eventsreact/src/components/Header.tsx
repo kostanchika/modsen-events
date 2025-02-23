@@ -1,7 +1,9 @@
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { useEffect, useState } from 'react';
 
 const Header = () => {
   const navigate = useNavigate();
+  const location = useLocation();
 
   const signOutHandler = () => {
     localStorage.removeItem('accessToken');
@@ -15,7 +17,22 @@ const Header = () => {
       <nav>
         <ul>
           <li>
-            <button onClick={() => navigate('/')}>Главная</button>
+            <button
+              className={location.pathname === '/' ? 'toggle-button' : ''}
+              onClick={() => navigate('/')}
+            >
+              Главная
+            </button>
+          </li>
+          <li>
+            <button
+              className={
+                location.pathname === '/myEvents' ? 'toggle-button' : ''
+              }
+              onClick={() => navigate('/myEvents')}
+            >
+              Мои события
+            </button>
           </li>
           <li>
             <button onClick={signOutHandler}>Выход</button>
