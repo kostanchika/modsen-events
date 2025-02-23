@@ -74,6 +74,15 @@ namespace EventsAPI
 
             var app = builder.Build();
 
+            app.UseCors(builder => {
+                builder
+                    .WithOrigins("http://localhost:3000")
+                    .AllowAnyHeader()
+                    .AllowAnyMethod()
+                    .WithExposedHeaders("X-Page-Count")
+                    .AllowCredentials();
+            });
+
             if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();
