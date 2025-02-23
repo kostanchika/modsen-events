@@ -5,6 +5,7 @@ using EventsAPI.Services;
 using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Org.BouncyCastle.Asn1.Ocsp;
 
 namespace EventsAPI.Controllers
 {
@@ -41,12 +42,8 @@ namespace EventsAPI.Controllers
         [HttpGet]
         public IActionResult GetAllEvents([FromQuery] GetEventsModel request)
         {
-            return Ok(
-                    new { 
-                        Events = _eventRepository.GetAllEventsWithFilters(request),
-                        Pages = _eventRepository.GetTotalPages(request.PageSize) 
-                    }
-                );
+            Response.Headers["X-Page-Count"] = _eventRepository.GetTotalPages(request.PageSize).ToString();
+            return Ok(_eventRepository.GetAllEventsWithFilters(request));
         }
 
         [HttpGet("{id}")]
