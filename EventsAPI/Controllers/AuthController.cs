@@ -50,11 +50,12 @@ namespace EventsAPI.Controllers
 
             try
             {
+                user.BirthDateTime = user.BirthDateTime.ToUniversalTime();
                 await _userRepository.AddAsync(user);
             }
             catch
             {
-                return BadRequest("Данный логин или почта уже заняты");
+                return Conflict("Логин или почта уже занят(ы)");
             }
 
             var accessToken = _tokenService.GenerateAccessToken(user);
@@ -65,7 +66,6 @@ namespace EventsAPI.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login(LoginModel logginingInUser)
         {
-
             var validationResult = await _loginingUserValidator.ValidateAsync(logginingInUser);
             if (!validationResult.IsValid)
             {
