@@ -26,6 +26,7 @@ const Filters = (props: FilterProps) => {
   };
 
   const handleCategoryChange: ChangeEventHandler<HTMLSelectElement> = (e) => {
+    // @ts-expect-error(string to enum from select)
     props.setFilters({ ...props.filters, category: e.target.value });
   };
 
