@@ -18,7 +18,9 @@ const EventsList = (props: { events: EventType[] }) => {
           currentParticipants={event.currentParticipants}
         />
       ))}
-      {props.events.length == 0 ? 'Событий не найдено' : ''}
+      <h2 className='event-list__empty'>
+        {props.events.length == 0 ? 'Событий не найдено' : ''}
+      </h2>
     </div>
   );
 };
