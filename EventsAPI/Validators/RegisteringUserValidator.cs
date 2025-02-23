@@ -18,7 +18,7 @@ namespace EventsAPI.Validators
                 .WithMessage("Длина пароля должна составлять от 8 до 20 символов")
                 .MaximumLength(20)
                 .WithMessage("Длина пароля должна составлять от 8 до 20 символов")
-                .Matches(@"^[A-Za-z\d]+$")
+                .Matches(@"^[A-Za-z\d]*$")
                 .WithMessage("Пароль может состоять только из латинских букв и цифр");
 
             RuleFor(x => x.Name)
@@ -26,7 +26,7 @@ namespace EventsAPI.Validators
                 .WithMessage("Длина имени должна составлять от 2 до 30 символов")
                 .MaximumLength(30)
                 .WithMessage("Длина имени должна составлять от 2 до 30 символов")
-                .Matches("^[a-zA-Zа-яА-ЯёЁ]+$")
+                .Matches("^[a-zA-Zа-яА-ЯёЁ]*$")
                 .WithMessage("Имя должно содержать только буквы");
 
             RuleFor(x => x.LastName)
@@ -34,7 +34,7 @@ namespace EventsAPI.Validators
                 .WithMessage("Длина фамилии должна составлять от 2 до 30 символов")
                 .MaximumLength(30)
                 .WithMessage("Длина фамилии должна составлять от 2 до 30 символов")
-                .Matches("^[a-zA-Zа-яА-ЯёЁ]+$")
+                .Matches("^[a-zA-Zа-яА-ЯёЁ]*$")
                 .WithMessage("Фамилия должно содержать только буквы");
 
             RuleFor(x => x.BirthDateTime)
@@ -45,7 +45,7 @@ namespace EventsAPI.Validators
 
             RuleFor(x => x.Email)
                 .Matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$")
-                .WithMessage("Неверный email");
+                .WithMessage("Неверный формат email");
         }
     }
 }

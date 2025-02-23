@@ -18,7 +18,7 @@ namespace EventsAPI.Validators
                 .WithMessage("Длина пароля должна составлять от 8 до 20 символов")
                 .MaximumLength(20)
                 .WithMessage("Длина пароля должна составлять от 8 до 20 символов")
-                .Matches(@"^[A-Za-z\d]+$")
+                .Matches(@"^[A-Za-z\d]*$")
                 .WithMessage("Пароль может состоять только из латинских букв и цифр");
         }
     }
