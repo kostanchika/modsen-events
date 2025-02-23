@@ -20,11 +20,10 @@ const EventListItem = (props: EventType) => {
       <p>{getEventCategoryText(props.category)}</p>
       <p style={{ color: remainTickets == 0 ? 'red' : '' }}>
         {remainTickets == 0
-          ? 'Свободные мест нет'
+          ? 'Свободных мест нет'
           : `Осталось мест: ${remainTickets}`}
       </p>
       <p>{formatDate(props.eventDateTime)}</p>
-      <p>{props.location}</p>
     </div>
   );
 };
