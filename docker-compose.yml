@@ -9,6 +9,13 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development  
     ports:
       - 8080:8080
+  eventsfront:
+    image: ${DOCKER_REGISTRY-}eventsfront
+    build:
+      context: .
+      dockerfile: eventsreact/Dockerfile
+    ports:
+      - 3000:4173
   postgresdb:
     image: postgres:latest
     environment:
@@ -19,6 +26,10 @@ services:
       - postgres_data:/var/lib/postgresql/data
     ports:
       - 5432:5432
+  adminer:
+    image: adminer:latest
+    ports:
+      - 8081:8080
 
 volumes:
   postgres_data:
