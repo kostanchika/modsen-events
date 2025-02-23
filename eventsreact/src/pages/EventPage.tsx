@@ -91,6 +91,11 @@ const EventPage = () => {
           </div>
         </div>
       )}
+      {!event && (
+        <div className='page-container'>
+          <h2 className='event-list__empty'>Событие не найдено</h2>
+        </div>
+      )}
     </>
   );
 };
