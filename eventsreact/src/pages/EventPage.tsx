@@ -67,7 +67,7 @@ const EventPage = () => {
       <Header />
       {event && (
         <div className='page-container'>
-          <div className='single-even'>
+          <div className='single-event'>
             <h2>
               {event.name}({getEventCategoryText(event.category)})
             </h2>
