@@ -8,6 +8,8 @@ namespace EventsAPI.Mappers
         public EventMapper()
         {
             CreateMap<CreateEventModel, Event>();
+            CreateMap<Event, GetEventsResponse>()
+                .ForMember(dest => dest.CurrentParticipants, opt => opt.MapFrom(src => src.Participants.Count));
         }
     }
 }

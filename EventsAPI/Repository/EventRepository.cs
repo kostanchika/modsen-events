@@ -51,7 +51,10 @@ namespace EventsAPI.Repository
                 query = query.Where(e => e.Category == model.Category);
             }
 
-            return query.AsEnumerable().Skip((model.Page - 1) * model.PageSize).Take(model.PageSize);
+            return query.Include(e => e.Participants)
+                        .AsEnumerable()
+                        .Skip((model.Page - 1) * model.PageSize)
+                        .Take(model.PageSize);
         }
 
         public int GetTotalPages(int pageSize)

@@ -43,7 +43,9 @@ namespace EventsAPI.Controllers
         public IActionResult GetAllEvents([FromQuery] GetEventsModel request)
         {
             Response.Headers["X-Page-Count"] = _eventRepository.GetTotalPages(request.PageSize).ToString();
-            return Ok(_eventRepository.GetAllEventsWithFilters(request));
+            var events = _eventRepository.GetAllEventsWithFilters(request);
+            var eventsResponse = events.Select(_mapper.Map<GetEventsResponse>);
+            return Ok(eventsResponse);
         }
 
         [HttpGet("{id}")]
