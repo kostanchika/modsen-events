@@ -229,5 +229,45 @@ namespace EventsAPI.Controllers
 
             return Ok(userWithEvents.Events.Select(_mapper.Map<GetEventsResponse>));
         }
+
+        [HttpGet("{id}/participants")]
+        public async Task<IActionResult> GetEventParticipants(int id)
+        {
+            var eventItem = await _eventRepository.GetByIdAsync(id);
+            if (eventItem == null)
+            {
+                return NotFound();
+            }
+
+            foreach (var participant in eventItem.Participants)
+            {
+                participant.Events = [];
+                participant.PasswordHash = "";
+                participant.RefreshToken = "";
+            }
+
+            return Ok(eventItem.Participants);
+        }
+
+        [HttpGet("{id}/participants/{participantId}")]
+        public async Task<IActionResult> GetEventParticipant(int id, int participantId)
+        {
+            var eventItem = await _eventRepository.GetByIdAsync(id);
+            if (eventItem == null)
+            {
+                return NotFound();
+            }
+
+            var participant = eventItem.Participants.FirstOrDefault(p => p.Id == participantId);
+            if (participant == null)
+            {
+                return NotFound();
+            }
+
+            participant.Events = [];
+            participant.PasswordHash = "";
+            participant.RefreshToken = "";
+            return Ok(participant);
+        }
     }
 }
