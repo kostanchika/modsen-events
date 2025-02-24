@@ -108,7 +108,7 @@ namespace EventsAPI.Controllers
 
             if (updatingEvent.MaximumParticipants < eventItem.Participants.Count)
             {
-                return BadRequest("Ќовое максимальное количество участников " +
+                return Conflict("Ќовое максимальное количество участников " +
                     "не может быть больше текущего количества");
             }
 
@@ -148,6 +148,11 @@ namespace EventsAPI.Controllers
                 return BadRequest("—вободные места на данное событие закончились");
             }
 
+            if (eventItem.EventDateTime < DateTime.UtcNow)
+            {
+                return Conflict("—обытие уже завершено");
+            }
+
             try
             {
                 await _eventService.RegisterUserForEvent(eventItem, login);
@@ -179,6 +184,11 @@ namespace EventsAPI.Controllers
             if (!eventItem.Participants.Select(u => u.Login).Contains(login))
             {
                 return BadRequest("¬ы прежде не были зарегистрированы в данном событии");
+            }
+
+            if (eventItem.EventDateTime < DateTime.UtcNow)
+            {
+                return Conflict("—обытие уже завершено");
             }
 
             try
