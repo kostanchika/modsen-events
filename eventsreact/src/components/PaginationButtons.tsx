@@ -18,7 +18,7 @@ const PaginationButtons = (props: PaginationButtonsProps) => {
         -
       </button>
       <span>
-        {props.currentPage}/{props.totalPages}
+        {props.currentPage}/{props.totalPages > 0 ? props.totalPages : 1}
       </span>
       <button className='plus-page' onClick={nextPage}>
         +
