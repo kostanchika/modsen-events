@@ -39,7 +39,7 @@ const CatalogPage = () => {
 
   useEffect(() => {
     if (totalPages < currentPage) {
-      setCurrentPage(totalPages);
+      setCurrentPage(totalPages > 0 ? totalPages : 1);
     }
   }, [totalPages]);
 
