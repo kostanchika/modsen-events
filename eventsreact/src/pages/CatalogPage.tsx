@@ -37,6 +37,12 @@ const CatalogPage = () => {
     fetchEvents();
   }, [filters, currentPage]);
 
+  useEffect(() => {
+    if (totalPages < currentPage) {
+      setCurrentPage(totalPages);
+    }
+  }, [totalPages]);
+
   return (
     <>
       <Header />
