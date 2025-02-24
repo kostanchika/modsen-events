@@ -7,6 +7,8 @@ services:
     environment:
       - ASPNETCORE_HTTP_PORTS=8080
       - ASPNETCORE_ENVIRONMENT=Development  
+    depends_on:
+      - postgresdb
     ports:
       - 8080:8080
   eventsfront:
