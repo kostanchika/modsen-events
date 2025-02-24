@@ -16,6 +16,8 @@ const CatalogPage = () => {
   });
 
   const getEvents = async (params: GetEventParams) => {
+    params.page = currentPage;
+    params.pageSize = params.pageSize || 12;
     const response = await axios.get('/api/events', {
       params,
     });
