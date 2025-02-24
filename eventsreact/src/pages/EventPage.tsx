@@ -13,6 +13,7 @@ const EventPage = () => {
   const [event, setEvent] = useState<EventType>();
   const [remainTickets, setRemainTickets] = useState(0);
   const [isParticipating, setIsParticipating] = useState(false);
+  const [isOver, setIsOver] = useState(false);
 
   const handleParticipate = () => {
     const register = async () => {
@@ -43,6 +44,7 @@ const EventPage = () => {
     const getEvent = async () => {
       const response = await axios.get(`/api/events/${id}`);
       setEvent(response.data);
+      setIsOver(new Date(response.data.eventDateTime) < new Date());
       const isParticipatingResponse = await axios.get('/api/events/my');
       for (const responseEvent of isParticipatingResponse.data) {
         if (responseEvent.id == id) {
@@ -72,19 +74,22 @@ const EventPage = () => {
               {event.name}({getEventCategoryText(event.category)})
             </h2>
             <img src={'http://localhost:8080' + event.imagePath} />
-            <div className='single-event__participate'>
-              <p style={{ color: remainTickets == 0 ? 'red' : '' }}>
-                {remainTickets == 0
-                  ? 'Свободные мест нет'
-                  : `Осталось мест: ${remainTickets}`}
-              </p>
-              <button
-                disabled={remainTickets === 0 && !isParticipating}
-                onClick={handleParticipate}
-              >
-                {isParticipating ? 'Отписаться' : 'Записаться'}
-              </button>
-            </div>
+            {!isOver && (
+              <div className='single-event__participate'>
+                <p style={{ color: remainTickets == 0 ? 'red' : '' }}>
+                  {remainTickets == 0
+                    ? 'Свободные мест нет'
+                    : `Осталось мест: ${remainTickets}`}
+                </p>
+                <button
+                  disabled={remainTickets === 0 && !isParticipating}
+                  onClick={handleParticipate}
+                >
+                  {isParticipating ? 'Отписаться' : 'Записаться'}
+                </button>
+              </div>
+            )}
+            {isOver && <h2 style={{ color: 'red' }}>Завершено</h2>}
             <p>{formatDate(event.eventDateTime)}</p>
             <p>{event.location}</p>
             <p>{event.description}</p>
