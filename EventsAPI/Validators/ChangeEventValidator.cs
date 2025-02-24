@@ -8,6 +8,8 @@ namespace EventsAPI.Validators
         public ChangeEventValidator()
         {
             RuleFor(x => x.Description)
+                .NotEmpty()
+                .WithMessage("Имя события не может быть пустым")
                 .MaximumLength(500)
                 .WithMessage("Максимальная длина описания события - 500 символов");
 
