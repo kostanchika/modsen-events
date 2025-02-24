@@ -1,5 +1,4 @@
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
 
 const instance = axios.create({
   baseURL: 'http://localhost:8080',
@@ -47,8 +46,7 @@ instance.interceptors.response.use(
       } catch (err) {
         console.error('Error refreshing token:', err);
 
-        const navigate = useNavigate();
-        navigate('/auth');
+        window.location.href = '/login';
       }
     }
 

@@ -5,6 +5,7 @@ import { EventType } from '../types.ts';
 import axios from '../axiosConfig.ts';
 import PaginationButtons from '../components/PaginationButtons.tsx';
 import { useNavigate } from 'react-router-dom';
+import { jwtDecode } from 'jwt-decode';
 
 const AdminPage = () => {
   const [events, setEvents] = useState<EventType[]>([]);
@@ -35,6 +36,17 @@ const AdminPage = () => {
 
     fetchEvents();
   }, [currentPage]);
+
+  useEffect(() => {
+    const jwtToken = localStorage.getItem('accessToken');
+    if (jwtToken) {
+      const decodedToken: { role: string } = jwtDecode(jwtToken);
+      const role = decodedToken.role;
+      if (role !== 'Admin') navigate('/');
+    } else {
+      navigate('/');
+    }
+  }, []);
 
   return (
     <>
