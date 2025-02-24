@@ -230,3 +230,25 @@ nav ul li button {
   float: right;
   width: 40%;
 }
+
+.create-event-form {
+  width: 80%;
+  margin: 20px auto;
+  border: 1px solid #f9f9f9;
+  padding: 10px;
+  border-radius: 5px;
+}
+
+.create-event-form h2 {
+  margin: 0;
+}
+
+.create-event-form label textarea {
+  resize: vertical;
+  min-height: 60px;
+  width: 100%;
+}
+
+.create-event-form label:not(:nth-child(5)) {
+  width: 50%;
+}
