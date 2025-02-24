@@ -16,6 +16,7 @@ function App() {
           <Route path='/myEvents' element={<UserEventsPage />} />
           <Route path='/events/:id' element={<EventPage />} />
           <Route path='/create' element={<CreateEventPage />} />
+          <Route path='/create/:id' element={<CreateEventPage />} />
           <Route path='/login' element={<LoginPage />} />
           <Route path='/register' element={<RegisterPage />} />
         </Routes>
