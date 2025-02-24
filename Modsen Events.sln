@@ -9,6 +9,8 @@ Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-co
 EndProject
 Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "eventsreact", "EventsReact\eventsreact.esproj", "{632C4DA2-7C20-4AE8-9E8A-6B39C7B23C78}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventsAPI.Tests", "EventsAPI.Tests\EventsAPI.Tests.csproj", "{331E69CF-7B84-4908-BBCF-5B36CE3DB68F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -29,6 +31,10 @@ Global
 		{632C4DA2-7C20-4AE8-9E8A-6B39C7B23C78}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{632C4DA2-7C20-4AE8-9E8A-6B39C7B23C78}.Release|Any CPU.Build.0 = Release|Any CPU
 		{632C4DA2-7C20-4AE8-9E8A-6B39C7B23C78}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{331E69CF-7B84-4908-BBCF-5B36CE3DB68F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{331E69CF-7B84-4908-BBCF-5B36CE3DB68F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{331E69CF-7B84-4908-BBCF-5B36CE3DB68F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{331E69CF-7B84-4908-BBCF-5B36CE3DB68F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
