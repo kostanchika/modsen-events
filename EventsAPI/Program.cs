@@ -80,6 +80,7 @@ namespace EventsAPI
                     .AllowAnyHeader()
                     .AllowAnyMethod()
                     .WithExposedHeaders("X-Page-Count")
+                    .WithExposedHeaders("X-Page-Count", "Location")
                     .AllowCredentials();
             });
 
