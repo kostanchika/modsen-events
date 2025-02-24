@@ -8,7 +8,7 @@ namespace EventsAPI.Repository
     {
         new Task<Event?> GetByIdAsync(int id);
         IEnumerable<Event> GetAllEventsWithFilters(GetEventsModel model);
-        int GetTotalPages(int pageSize);
+        int GetTotalPages(GetEventsModel model);
     }
     public class EventRepository : Repository<Event>, IEventRepository
     {
@@ -62,20 +62,47 @@ namespace EventsAPI.Repository
                         .Take(model.PageSize);
         }
 
-        public int GetTotalPages(int pageSize)
+        public int GetTotalPages(GetEventsModel model)
         {
-            if (pageSize <= 0)
+            if (model.PageSize <= 0)
             {
                 throw new ArgumentException("Размер страницы должен быть больше 0");
             }
 
-            if (pageSize > 100)
+            if (model.PageSize > 100)
             {
                 throw new ArgumentException("Размер страницы не может быть больше 100");
             }
 
-            int totalItems = _dbSet.Count();
-            return (int)Math.Ceiling((double)totalItems / pageSize);
+            var query = _dbSet.AsQueryable();
+
+            if (model.Name != null)
+            {
+                query = query.Where(e => e.Name.Contains(model.Name));
+            }
+
+            if (model.DateFrom.HasValue)
+            {
+                query = query.Where(e => e.EventDateTime >= model.DateFrom);
+            }
+
+            if (model.DateTo.HasValue)
+            {
+                query = query.Where(e => e.EventDateTime <= model.DateTo);
+            }
+
+            if (model.Location != null)
+            {
+                query = query.Where(e => e.Location.Contains(model.Location));
+            }
+
+            if (model.Category.HasValue && model.Category.Value != EventCategories.Unspecified)
+            {
+                query = query.Where(e => e.Category == model.Category);
+            }
+
+            int totalItems = query.Count();
+            return (int)Math.Ceiling((double)totalItems / model.PageSize);
         }
 
     }
