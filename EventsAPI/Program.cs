@@ -79,7 +79,6 @@ namespace EventsAPI
                     .WithOrigins("http://localhost:3000")
                     .AllowAnyHeader()
                     .AllowAnyMethod()
-                    .WithExposedHeaders("X-Page-Count")
                     .WithExposedHeaders("X-Page-Count", "Location")
                     .AllowCredentials();
             });
