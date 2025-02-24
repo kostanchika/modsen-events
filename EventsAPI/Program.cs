@@ -74,6 +74,12 @@ namespace EventsAPI
 
             var app = builder.Build();
 
+            using (var scope = app.Services.CreateScope())
+            {
+                var context = scope.ServiceProvider.GetService<ApplicationContext>();
+                context.Database.Migrate();
+            }
+
             app.UseCors(builder => {
                 builder
                     .WithOrigins("http://localhost:3000")
