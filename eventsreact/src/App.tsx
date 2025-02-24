@@ -5,6 +5,7 @@ import RegisterPage from './pages/RegisterPage.tsx';
 import { ToastContainer } from 'react-toastify';
 import EventPage from './pages/EventPage.tsx';
 import UserEventsPage from './pages/UserEventsPage.tsx';
+import AdminPage from './pages/AdminPage.tsx';
 import CreateEventPage from './pages/CreateEventPage.tsx';
 
 function App() {
@@ -15,6 +16,7 @@ function App() {
           <Route path='/' element={<CatalogPage />} />
           <Route path='/myEvents' element={<UserEventsPage />} />
           <Route path='/events/:id' element={<EventPage />} />
+          <Route path='/admin' element={<AdminPage />} />
           <Route path='/create' element={<CreateEventPage />} />
           <Route path='/create/:id' element={<CreateEventPage />} />
           <Route path='/login' element={<LoginPage />} />

@@ -51,3 +51,13 @@ export type FilterProps = {
 export type EventPageProps = {
   event: EventType;
 };
+
+export type AdminMenuListProps = {
+  events: EventType[];
+  setEvents: (events: EventType[]) => void;
+};
+
+export type AdminMenuListItemProps = {
+  event: EventType;
+  setEvents: (events: EventType[]) => void;
+};
