@@ -72,6 +72,10 @@ const CreateEventPage = () => {
       if (!error.response) return;
       if (error.response.status === 400) {
         const validationErrors = error.response.data.errors;
+        if (!validationErrors) {
+          toast.error(error.response.data);
+          return;
+        }
         Object.keys(validationErrors).map((key) =>
           validationErrors[key].forEach((error: string) => {
             if (!/^[A-Za-z0-9 .,?!']+$/.test(error)) {
