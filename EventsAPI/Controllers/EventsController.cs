@@ -117,7 +117,7 @@ namespace EventsAPI.Controllers
                 eventItem.ImagePath = await _imageService.UploadImageAsync(updatingEvent.Image);
             }
 
-            await _eventService.UpdateEvent(eventItem, updatingEvent);
+            await _eventService.UpdateEventAsync(eventItem, updatingEvent);
 
             return Ok();
         }
@@ -155,7 +155,7 @@ namespace EventsAPI.Controllers
 
             try
             {
-                await _eventService.RegisterUserForEvent(eventItem, login);
+                await _eventService.RegisterUserForEventAsync(eventItem, login);
             }
             catch
             {
@@ -193,7 +193,7 @@ namespace EventsAPI.Controllers
 
             try
             {
-                await _eventService.UnregisterUserFromEvent(eventItem, login);
+                await _eventService.UnregisterUserFromEventAsync(eventItem, login);
             }
             catch
             {

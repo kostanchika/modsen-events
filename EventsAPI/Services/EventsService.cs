@@ -15,7 +15,7 @@ namespace EventsAPI.Services
             _emailSender = emailSender;
         }
 
-        public async Task UpdateEvent(Event eventItem, ChangeEventModel newData)
+        public async Task UpdateEventAsync(Event eventItem, ChangeEventModel newData)
         {
             bool isKeyFieldsChanged = false;
             if (
@@ -50,7 +50,7 @@ namespace EventsAPI.Services
             }
         }
 
-        public async Task RegisterUserForEvent(Event eventItem, string userLogin)
+        public async Task RegisterUserForEventAsync(Event eventItem, string userLogin)
         {
             var user = await _userRepository.GetByLoginAsync(userLogin) ?? 
                 throw new Exception("Не удалось найти пользователя с данным логином");
@@ -60,7 +60,7 @@ namespace EventsAPI.Services
             await _userRepository.UpdateAsync(user);
         }
 
-        public async Task UnregisterUserFromEvent(Event eventItem, string userLogin)
+        public async Task UnregisterUserFromEventAsync(Event eventItem, string userLogin)
         {
             var user = eventItem.Participants.FirstOrDefault(p => p.Login == userLogin) ??
                 throw new Exception("Не удалось найти пользователя с данным логином");
