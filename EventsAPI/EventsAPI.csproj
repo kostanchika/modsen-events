@@ -29,4 +29,8 @@
     <Folder Include="wwwroot\images\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\EventAPI.DAL\EventsAPI.DAL.csproj" />
+  </ItemGroup>
+
 </Project>

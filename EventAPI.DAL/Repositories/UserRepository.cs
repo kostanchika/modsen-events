@@ -1,15 +1,10 @@
-﻿using EventsAPI.Data;
-using EventsAPI.Models;
+﻿using EventsAPI.DAL.Data;
+using EventsAPI.DAL.Entities;
+using EventsAPI.DAL.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
-namespace EventsAPI.Repository
+namespace EventsAPI.DAL.Repositories
 {
-    public interface IUserRepository : IRepository<User>
-    {
-        Task<User?> GetByLoginAsync(string login);
-        Task<User?> GetByLoginIncludeEventsAsync(string login);
-    }
-
     public class UserRepository : Repository<User>, IUserRepository
     {
         public UserRepository(ApplicationContext context) : base(context) { }

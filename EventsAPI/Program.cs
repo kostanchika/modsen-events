@@ -1,9 +1,9 @@
-
-using EventsAPI.Data;
+using EventsAPI.DAL.Data;
+using EventsAPI.DAL.Interfaces;
+using EventsAPI.DAL.Repositories;
 using EventsAPI.Mappers;
 using EventsAPI.Middlewares;
 using EventsAPI.Models;
-using EventsAPI.Repository;
 using EventsAPI.Services;
 using EventsAPI.Validators;
 using FluentValidation;
@@ -74,7 +74,8 @@ namespace EventsAPI
 
             var app = builder.Build();
 
-            app.UseCors(builder => {
+            app.UseCors(builder =>
+            {
                 builder
                     .WithOrigins("http://localhost:3000")
                     .AllowAnyHeader()

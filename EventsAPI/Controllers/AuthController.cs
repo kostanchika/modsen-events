@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
+using EventsAPI.DAL.Entities;
+using EventsAPI.DAL.Interfaces;
 using EventsAPI.Models;
-using EventsAPI.Repository;
 using EventsAPI.Services;
 using FluentValidation;
 using Microsoft.AspNetCore.Mvc;

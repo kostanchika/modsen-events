@@ -1,4 +1,6 @@
-﻿namespace EventsAPI.Models
+﻿using EventsAPI.DAL.Entities;
+
+namespace EventsAPI.Models
 {
     public record class ChangeEventModel(
         string Description,

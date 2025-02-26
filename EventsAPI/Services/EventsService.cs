@@ -1,5 +1,6 @@
-﻿using EventsAPI.Models;
-using EventsAPI.Repository;
+﻿using EventsAPI.DAL.Entities;
+using EventsAPI.DAL.Interfaces;
+using EventsAPI.Models;
 
 namespace EventsAPI.Services
 {
@@ -52,7 +53,7 @@ namespace EventsAPI.Services
 
         public async Task RegisterUserForEventAsync(Event eventItem, string userLogin)
         {
-            var user = await _userRepository.GetByLoginAsync(userLogin) ?? 
+            var user = await _userRepository.GetByLoginAsync(userLogin) ??
                 throw new Exception("Не удалось найти пользователя с данным логином");
             eventItem.Participants.Add(user);
             user.Events.Add(eventItem);

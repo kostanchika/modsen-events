@@ -11,6 +11,8 @@ Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "eventsreact", "EventsReact\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventsAPI.Tests", "EventsAPI.Tests\EventsAPI.Tests.csproj", "{331E69CF-7B84-4908-BBCF-5B36CE3DB68F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventsAPI.DAL", "EventAPI.DAL\EventsAPI.DAL.csproj", "{401C2ADB-3999-4CCE-AF8B-04B839E0C23E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -35,6 +37,10 @@ Global
 		{331E69CF-7B84-4908-BBCF-5B36CE3DB68F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{331E69CF-7B84-4908-BBCF-5B36CE3DB68F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{331E69CF-7B84-4908-BBCF-5B36CE3DB68F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{401C2ADB-3999-4CCE-AF8B-04B839E0C23E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{401C2ADB-3999-4CCE-AF8B-04B839E0C23E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{401C2ADB-3999-4CCE-AF8B-04B839E0C23E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{401C2ADB-3999-4CCE-AF8B-04B839E0C23E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,17 +1,9 @@
-﻿using EventsAPI.Data;
+﻿using EventsAPI.DAL.Data;
+using EventsAPI.DAL.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
-namespace EventsAPI.Repository
+namespace EventsAPI.DAL.Repositories
 {
-    public interface IRepository<T> where T : class
-    {
-        Task<IEnumerable<T>> GetAllAsync();
-        Task<T?> GetByIdAsync(int id);
-        Task AddAsync(T entity);
-        Task<T> UpdateAsync(T entity);
-        Task<T?> DeleteAsync(int id);
-    }
-
     public class Repository<T> : IRepository<T> where T : class
     {
         private readonly ApplicationContext _context;

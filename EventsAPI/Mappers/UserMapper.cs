@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using EventsAPI.DAL.Entities;
 using EventsAPI.Models;
 
 namespace EventsAPI.Mappers

@@ -1,11 +1,11 @@
 using AutoMapper;
+using EventsAPI.DAL.Entities;
+using EventsAPI.DAL.Interfaces;
 using EventsAPI.Models;
-using EventsAPI.Repository;
 using EventsAPI.Services;
 using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Org.BouncyCastle.Asn1.Ocsp;
 
 namespace EventsAPI.Controllers
 {
@@ -21,9 +21,9 @@ namespace EventsAPI.Controllers
         private readonly ImageService _imageService;
         private readonly EventsService _eventService;
         public EventsController(
-            IEventRepository eventRepository, 
+            IEventRepository eventRepository,
             IUserRepository userRepository,
-            IMapper mapper, 
+            IMapper mapper,
             IValidator<CreateEventModel> creatingEventValidator,
             IValidator<ChangeEventModel> changingEventValidator,
             ImageService imageService,
@@ -42,8 +42,24 @@ namespace EventsAPI.Controllers
         [HttpGet]
         public IActionResult GetAllEvents([FromQuery] GetEventsModel request)
         {
-            Response.Headers["X-Page-Count"] = _eventRepository.GetTotalPages(request).ToString();
-            var events = _eventRepository.GetAllEventsWithFilters(request);
+            Response.Headers["X-Page-Count"] = _eventRepository.GetTotalPages(
+                    request.Page,
+                    request.PageSize,
+                    request.Name,
+                    request.DateFrom,
+                    request.DateTo,
+                    request.Location,
+                    request.Category
+                ).ToString();
+            var events = _eventRepository.GetAllEventsWithFilters(
+                request.Page,
+                request.PageSize,
+                request.Name,
+                request.DateFrom,
+                request.DateTo,
+                request.Location,
+                request.Category
+            );
             var eventsResponse = events.Select(_mapper.Map<GetEventsResponse>);
             return Ok(eventsResponse);
         }
