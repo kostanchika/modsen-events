@@ -1,11 +1,13 @@
 ﻿using AutoMapper;
 using EventsAPI.DAL.Entities;
 using EventsAPI.Models;
+using EventsAPI.Services;
 
 namespace EventsAPI.Mappers
 {
     public class UserMapper : Profile
     {
+        private static PasswordService _passwordService = new PasswordService();
         public UserMapper()
         {
             CreateMap<RegisterModel, User>()
@@ -15,7 +17,7 @@ namespace EventsAPI.Mappers
 
         private static string HashPassword(string password)
         {
-            return BCrypt.Net.BCrypt.HashPassword(password);
+            return _passwordService.HashPassword(password);
         }
     }
 }

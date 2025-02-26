@@ -18,13 +18,15 @@ namespace EventsAPI.Controllers
         private readonly IValidator<RegisterModel> _registeringUserValidator;
         private readonly IValidator<LoginModel> _loginingUserValidator;
         private readonly TokenService _tokenService;
+        private readonly PasswordService _passwordService;
 
         public AuthController(
             IUserRepository userRepository,
             IMapper mapper,
             IValidator<RegisterModel> registeringUserValidator,
             IValidator<LoginModel> loginingUserValidator,
-            TokenService tokenService
+            TokenService tokenService,
+            PasswordService passwordService
         )
         {
             _userRepository = userRepository;
@@ -32,6 +34,7 @@ namespace EventsAPI.Controllers
             _registeringUserValidator = registeringUserValidator;
             _loginingUserValidator = loginingUserValidator;
             _tokenService = tokenService;
+            _passwordService = passwordService;
         }
 
         [HttpPost("register")]
@@ -79,7 +82,7 @@ namespace EventsAPI.Controllers
                 return NotFound("Пользователь с данным логином не найден");
             }
 
-            if (!BCrypt.Net.BCrypt.Verify(logginingInUser.Password, user.PasswordHash))
+            if (!_passwordService.ValidatePassword(logginingInUser.Password, user.PasswordHash))
             {
                 return BadRequest("Неверный пароль");
             }
