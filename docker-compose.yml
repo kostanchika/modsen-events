@@ -1,3 +1,4 @@
+---
 services:
   eventsapi:
     image: ${DOCKER_REGISTRY-}eventsapi
@@ -28,10 +29,5 @@ services:
       - postgres_data:/var/lib/postgresql/data
     ports:
       - 5432:5432
-  adminer:
-    image: adminer:latest
-    ports:
-      - 8081:8080
-
 volumes:
   postgres_data:
