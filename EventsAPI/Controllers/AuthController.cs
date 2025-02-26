@@ -132,7 +132,5 @@ namespace EventsAPI.Controllers
             var accessToken = _tokenService.GenerateAccessToken(user);
             return Ok(new { accessToken, refreshToken.RefreshToken });
         }
-
-        public record class TokenRequest(string AccessToken, string RefreshToken);
     }
 }

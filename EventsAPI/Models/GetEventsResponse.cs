@@ -1,6 +1,6 @@
 ﻿namespace EventsAPI.Models
 {
-    public class Event
+    public class GetEventsResponse
     {
         public int Id { get; set; }
         public string Name { get; set; }
@@ -9,7 +9,7 @@
         public string Location { get; set; }
         public EventCategories Category { get; set; }
         public int MaximumParticipants { get; set; }
-        public List<User> Participants { get; set; } = new List<User>();
+        public int CurrentParticipants { get; set; }
         public string ImagePath { get; set; }
     }
 }
