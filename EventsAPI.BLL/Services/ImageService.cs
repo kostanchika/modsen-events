@@ -1,21 +1,23 @@
-﻿namespace EventsAPI.Services
+﻿using EventsAPI.BLL.Interfaces;
+
+namespace EventsAPI.BLL.Services
 {
     public class ImageService
     {
-        private readonly IWebHostEnvironment _environment;
-        public ImageService(IWebHostEnvironment environment)
+        private readonly IImagePath _environment;
+        public ImageService(IImagePath environment)
         {
             _environment = environment;
         }
 
-        public async Task<string> UploadImageAsync(IFormFile image)
+        public async Task<string> UploadImageAsync(IImageFile image)
         {
             if (!IsImage(image))
             {
                 throw new ArgumentException("Переданный файл не является поддерживаемой картинкой");
             }
 
-            var uploadsFolder = Path.Combine(_environment.WebRootPath, "images");
+            var uploadsFolder = Path.Combine(_environment.RootPath, "images");
             var uniqueFileName = Guid.NewGuid().ToString() + "_" + image.FileName;
             var filePath = Path.Combine(uploadsFolder, uniqueFileName);
             using (var fileStream = new FileStream(filePath, FileMode.Create))
@@ -25,7 +27,7 @@
             return $"/images/{uniqueFileName}";
         }
 
-        private static bool IsImage(IFormFile file)
+        private static bool IsImage(IImageFile file)
         {
             var validImageTypes = new[] { "image/jpeg", "image/png", "image/webp" };
             return validImageTypes.Contains(file.ContentType);

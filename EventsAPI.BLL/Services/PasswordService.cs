@@ -1,4 +1,4 @@
-﻿namespace EventsAPI.Services
+﻿namespace EventsAPI.BLL.Services
 {
     public class PasswordService
     {

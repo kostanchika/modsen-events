@@ -1,4 +1,7 @@
-﻿using System.Net;
+﻿using FluentValidation;
+using Microsoft.IdentityModel.Tokens;
+using System.Net;
+using System.Text.Json;
 
 namespace EventsAPI.Middlewares
 {
@@ -17,19 +20,45 @@ namespace EventsAPI.Middlewares
             {
                 await _next(context);
             }
+            catch (ValidationException ex)
+            {
+                context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                await WriteJsonErrorResponse(context, ex.Message);
+            }
+            catch (SecurityTokenException ex)
+            {
+                context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
+                await WriteJsonErrorResponse(context, ex.Message);
+            }
+            catch (NullReferenceException ex)
+            {
+                context.Response.StatusCode = (int)HttpStatusCode.NotFound;
+                await WriteJsonErrorResponse(context, ex.Message);
+            }
+            catch (InvalidOperationException ex)
+            {
+                context.Response.StatusCode = (int)HttpStatusCode.Conflict;
+                await WriteJsonErrorResponse(context, ex.Message);
+            }
             catch (Exception ex)
             {
-                await HandleExceptionAsync(context, ex);
+                context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+                await WriteJsonErrorResponse(context, "Произошла непредвиденная ошибка. Пожалуйста, попробуйте позже.");
             }
         }
 
-        private static Task HandleExceptionAsync(HttpContext context, Exception exception)
+        private static Task WriteJsonErrorResponse(HttpContext context, string message)
         {
-            context.Response.ContentType = "application/json";
-            context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+            var errorResponse = new
+            {
+                Error = message,
+                StatusCode = context.Response.StatusCode,
+                Timestamp = DateTime.UtcNow
+            };
 
-            return context.Response.WriteAsync(exception.Message);
+            var jsonResponse = JsonSerializer.Serialize(errorResponse);
+            context.Response.ContentType = "application/json";
+            return context.Response.WriteAsync(jsonResponse);
         }
     }
-
 }

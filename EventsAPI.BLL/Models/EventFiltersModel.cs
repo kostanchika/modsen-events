@@ -1,8 +1,8 @@
 ﻿using EventsAPI.DAL.Entities;
 
-namespace EventsAPI.Models
+namespace EventsAPI.BLL.Models
 {
-    public record class GetEventsModel(
+    public record class EventFiltersModel(
         string? Name,
         DateTime? DateFrom,
         DateTime? DateTo,

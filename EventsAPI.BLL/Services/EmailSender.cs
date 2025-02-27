@@ -1,7 +1,8 @@
-﻿using MailKit.Net.Smtp;
+﻿using Microsoft.Extensions.Configuration;
 using MimeKit;
+using MailKit.Net.Smtp;
 
-namespace EventsAPI.Services
+namespace EventsAPI.BLL.Services
 {
     public class EmailSender
     {

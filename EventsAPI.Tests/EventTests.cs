@@ -1,13 +1,5 @@
-﻿using EventsAPI.Data;
-using EventsAPI.Models;
-using EventsAPI.Repository;
-using EventsAPI.Services;
+﻿using EventsAPI.Services;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace EventsAPI.Tests
 {

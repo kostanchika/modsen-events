@@ -1,21 +1,15 @@
-﻿using EventsAPI.Models;
+﻿using EventsAPI.BLL.DTO;
 using FluentValidation;
 
-namespace EventsAPI.Validators
+namespace EventsAPI.BLL.Validators
 {
-    public class CreateEventValidator : AbstractValidator<CreateEventModel>
+    public class ChangeEventDTOValidator : AbstractValidator<ChangeEventDTO>
     {
-        public CreateEventValidator()
+        public ChangeEventDTOValidator()
         {
-            RuleFor(x => x.Name)
-                .NotEmpty()
-                .WithMessage("Имя события не может быть пустым")
-                .MaximumLength(100)
-                .WithMessage("Максимальная длина имени события - 100 символов");
-
             RuleFor(x => x.Description)
                 .NotEmpty()
-                .WithMessage("Описание события не может быть пустым")
+                .WithMessage("Имя события не может быть пустым")
                 .MaximumLength(500)
                 .WithMessage("Максимальная длина описания события - 500 символов");
 
@@ -30,7 +24,7 @@ namespace EventsAPI.Validators
                 .WithMessage("Максимальная длина места проведения - 100 символов");
 
             RuleFor(x => x.Category)
-                .NotEmpty()
+                .NotEqual(DAL.Entities.EventCategories.Unspecified)
                 .WithMessage("Категория события не может быть пустой");
 
             RuleFor(x => x.MaximumParticipants)

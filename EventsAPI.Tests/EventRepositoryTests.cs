@@ -1,10 +1,11 @@
 using AutoMapper;
-using EventsAPI.Data;
+using EventsAPI.BLL.Models;
+using EventsAPI.BLL.Validators;
+using EventsAPI.DAL.Data;
+using EventsAPI.DAL.Entities;
+using EventsAPI.DAL.Repositories;
 using EventsAPI.Mappers;
 using EventsAPI.Models;
-using EventsAPI.Repository;
-using EventsAPI.Services;
-using EventsAPI.Validators;
 using Microsoft.EntityFrameworkCore;
 
 namespace EventsAPI.Tests
@@ -44,8 +45,15 @@ namespace EventsAPI.Tests
             var db = CreateDatabase();
             var eventRepository = new EventRepository(db);
 
-            var request = new GetEventsModel("90", DateTime.UtcNow.AddDays(4), DateTime.UtcNow.AddYears(1), null, EventCategories.Music, Page: 1, PageSize: 10);
-            Assert.Single(eventRepository.GetAllEventsWithFilters(request));
+            var filters = new EventFiltersModel("90", DateTime.UtcNow.AddDays(4), DateTime.UtcNow.AddYears(1), null, EventCategories.Music, Page: 1, PageSize: 10);
+            Assert.Single(eventRepository.GetAllEventsWithFilters(
+                filters.Page,
+                filters.PageSize,
+                filters.Name,
+                filters.DateFrom,
+                filters.DateTo,
+                filters.Location,
+                filters.Category));
         }
 
         [Fact(DisplayName = "Создание корректного события")]
@@ -53,7 +61,7 @@ namespace EventsAPI.Tests
         {
             var db = CreateDatabase();
             var eventRepository = new EventRepository(db);
-            var creatingEvent = new CreateEventModel(
+            var creatingEvent = new BLL.DTO.CreateEventDTO(
                 "Игра в футбол",
                 "Надо иметь разряд по футболу",
                 DateTime.UtcNow.AddMonths(1),
@@ -66,7 +74,7 @@ namespace EventsAPI.Tests
             var config = new MapperConfiguration(cfg => cfg.AddProfile<EventMapper>());
             var mapper = config.CreateMapper();
 
-            var creatingEventValidator = new CreateEventValidator();
+            var creatingEventValidator = new CreateEventDTOValidator();
             var result = creatingEventValidator.Validate(creatingEvent);
 
             if (result.IsValid)
@@ -84,7 +92,7 @@ namespace EventsAPI.Tests
         {
             var db = CreateDatabase();
             var eventRepository = new EventRepository(db);
-            var creatingEvent = new CreateEventModel(
+            var creatingEvent = new BLL.DTO.CreateEventDTO(
                 "Игра в футбол",
                 "Надо иметь разряд по футболу",
                 DateTime.UtcNow.AddMonths(1),
@@ -97,7 +105,7 @@ namespace EventsAPI.Tests
             var config = new MapperConfiguration(cfg => cfg.AddProfile<EventMapper>());
             var mapper = config.CreateMapper();
 
-            var creatingEventValidator = new CreateEventValidator();
+            var creatingEventValidator = new CreateEventDTOValidator();
             var result = creatingEventValidator.Validate(creatingEvent);
 
             if (result.IsValid)

@@ -1,8 +1,13 @@
 ﻿using EventsAPI.DAL.Entities;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace EventsAPI.Models
+namespace EventsAPI.BLL.DTO
 {
-    public class GetEventsResponse
+    public class EventDTO
     {
         public int Id { get; set; }
         public string Name { get; set; }

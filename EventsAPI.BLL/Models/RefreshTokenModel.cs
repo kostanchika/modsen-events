@@ -1,4 +1,4 @@
-﻿namespace EventsAPI.Models
+﻿namespace EventsAPI.BLL.Models
 {
     public class RefreshTokenModel
     {

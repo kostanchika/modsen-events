@@ -1,9 +1,9 @@
 using AutoMapper;
-using EventsAPI.DAL.Entities;
-using EventsAPI.DAL.Interfaces;
+using EventsAPI.BLL.DTO;
+using EventsAPI.BLL.Models;
+using EventsAPI.BLL.Services;
 using EventsAPI.Models;
-using EventsAPI.Services;
-using FluentValidation;
+using EventsAPI.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -13,127 +13,47 @@ namespace EventsAPI.Controllers
     [Route("api/[controller]")]
     public class EventsController : ControllerBase
     {
-        private readonly IEventRepository _eventRepository;
-        private readonly IUserRepository _userRepository;
         private readonly IMapper _mapper;
-        private readonly IValidator<CreateEventModel> _creatingEventValidator;
-        private readonly IValidator<ChangeEventModel> _changingEventValidator;
-        private readonly ImageService _imageService;
-        private readonly EventsService _eventService;
-        public EventsController(
-            IEventRepository eventRepository,
-            IUserRepository userRepository,
-            IMapper mapper,
-            IValidator<CreateEventModel> creatingEventValidator,
-            IValidator<ChangeEventModel> changingEventValidator,
-            ImageService imageService,
-            EventsService eventService
-        )
+        private readonly EventsService _eventsService;
+        public EventsController(IMapper mapper, EventsService eventsService)
         {
-            _eventRepository = eventRepository;
-            _userRepository = userRepository;
             _mapper = mapper;
-            _creatingEventValidator = creatingEventValidator;
-            _changingEventValidator = changingEventValidator;
-            _imageService = imageService;
-            _eventService = eventService;
+            _eventsService = eventsService;
         }
 
         [HttpGet]
-        public IActionResult GetAllEvents([FromQuery] GetEventsModel request)
+        public IEnumerable<EventViewModel> GetAllEvents([FromQuery] EventFiltersModel filters)
         {
-            Response.Headers["X-Page-Count"] = _eventRepository.GetTotalPages(
-                    request.Page,
-                    request.PageSize,
-                    request.Name,
-                    request.DateFrom,
-                    request.DateTo,
-                    request.Location,
-                    request.Category
-                ).ToString();
-            var events = _eventRepository.GetAllEventsWithFilters(
-                request.Page,
-                request.PageSize,
-                request.Name,
-                request.DateFrom,
-                request.DateTo,
-                request.Location,
-                request.Category
-            );
-            var eventsResponse = events.Select(_mapper.Map<GetEventsResponse>);
-            return Ok(eventsResponse);
+            Response.Headers["X-Page-Count"] = _eventsService.GetTotalPages(filters).ToString();
+
+            return _eventsService.GetAllEvents(filters).Select(_mapper.Map<EventViewModel>);
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetSingleEvent(int id)
+        public async Task<EventViewModel> GetSingleEvent(int id)
         {
-            var eventItem = await _eventRepository.GetByIdAsync(id);
-            if (eventItem == null)
-            {
-                return NotFound();
-            }
+            var eventItem = await _eventsService.GetEventAsync(id);
 
-            return Ok(_mapper.Map<GetEventsResponse>(eventItem));
+            return _mapper.Map<EventViewModel>(eventItem);
         }
 
         [HttpPost]
         [Authorize(Policy = "AdminPolicy")]
         public async Task<IActionResult> CreateEvent([FromForm] CreateEventModel creatingEvent)
         {
-            var validationResult = await _creatingEventValidator.ValidateAsync(creatingEvent);
-            if (!validationResult.IsValid)
-            {
-                return BadRequest(validationResult.Errors);
-            }
+            var eventDTO = _mapper.Map<CreateEventDTO>(creatingEvent);
+            var eventItem = await _eventsService.CreateEventAsync(eventDTO);
+            var eventViewModel = _mapper.Map<EventViewModel>(eventItem);
 
-            var eventItem = _mapper.Map<Event>(creatingEvent);
-            if (eventItem.Category == EventCategories.Unspecified)
-            {
-                return BadRequest("Ќельз€ создать событие без категории");
-            }
-            if (creatingEvent.Image != null && creatingEvent.Image.Length > 0)
-            {
-                eventItem.ImagePath = await _imageService.UploadImageAsync(creatingEvent.Image);
-            }
-
-            await _eventRepository.AddAsync(eventItem);
-
-            return CreatedAtAction(nameof(GetSingleEvent), new { id = eventItem.Id }, eventItem);
+            return CreatedAtAction(nameof(GetSingleEvent), new { id = eventItem.Id }, eventViewModel);
         }
 
         [HttpPut("{id}")]
         [Authorize(Policy = "AdminPolicy")]
         public async Task<IActionResult> ChangeEvent(int id, [FromForm] ChangeEventModel updatingEvent)
         {
-            var eventItem = await _eventRepository.GetByIdAsync(id);
-            if (eventItem == null)
-            {
-                return NotFound();
-            }
-
-            var validationResult = await _changingEventValidator.ValidateAsync(updatingEvent);
-            if (!validationResult.IsValid)
-            {
-                return BadRequest(validationResult.Errors);
-            }
-
-            if (updatingEvent.Category == EventCategories.Unspecified)
-            {
-                return BadRequest("Ќельз€ создать событие без категории");
-            }
-
-            if (updatingEvent.MaximumParticipants < eventItem.Participants.Count)
-            {
-                return Conflict("Ќовое максимальное количество участников " +
-                    "не может быть больше текущего количества");
-            }
-
-            if (updatingEvent.Image != null && updatingEvent.Image.Length > 0)
-            {
-                eventItem.ImagePath = await _imageService.UploadImageAsync(updatingEvent.Image);
-            }
-
-            await _eventService.UpdateEventAsync(eventItem, updatingEvent);
+            var eventDTO = _mapper.Map<ChangeEventDTO>(updatingEvent);
+            await _eventsService.ChangeEventAsync(id, eventDTO);
 
             return Ok();
         }
@@ -143,40 +63,8 @@ namespace EventsAPI.Controllers
         public async Task<IActionResult> RegisterForEvent(int id)
         {
             var login = User?.Identity?.Name;
-            if (login == null)
-            {
-                return Unauthorized();
-            }
 
-            var eventItem = await _eventRepository.GetByIdAsync(id);
-            if (eventItem == null)
-            {
-                return NotFound();
-            }
-
-            if (eventItem.Participants.Select(u => u.Login).Contains(login))
-            {
-                return BadRequest("¬ы уже зарегистрированы в данном событии");
-            }
-
-            if (eventItem.Participants.Count >= eventItem.MaximumParticipants)
-            {
-                return BadRequest("—вободные места на данное событие закончились");
-            }
-
-            if (eventItem.EventDateTime < DateTime.UtcNow)
-            {
-                return Conflict("—обытие уже завершено");
-            }
-
-            try
-            {
-                await _eventService.RegisterUserForEventAsync(eventItem, login);
-            }
-            catch
-            {
-                return NotFound();
-            }
+            await _eventsService.RegisterUserForEventAsync(id, login);
 
             return Ok();
         }
@@ -186,35 +74,8 @@ namespace EventsAPI.Controllers
         public async Task<IActionResult> UnregisterForEvent(int id)
         {
             var login = User?.Identity?.Name;
-            if (login == null)
-            {
-                return Unauthorized();
-            }
 
-            var eventItem = await _eventRepository.GetByIdAsync(id);
-            if (eventItem == null)
-            {
-                return NotFound();
-            }
-
-            if (!eventItem.Participants.Select(u => u.Login).Contains(login))
-            {
-                return BadRequest("¬ы прежде не были зарегистрированы в данном событии");
-            }
-
-            if (eventItem.EventDateTime < DateTime.UtcNow)
-            {
-                return Conflict("—обытие уже завершено");
-            }
-
-            try
-            {
-                await _eventService.UnregisterUserFromEventAsync(eventItem, login);
-            }
-            catch
-            {
-                return NotFound();
-            }
+            await _eventsService.UnregisterUserFromEventAsync(id, login);
 
             return Ok();
         }
@@ -223,67 +84,36 @@ namespace EventsAPI.Controllers
         [Authorize(Policy = "AdminPolicy")]
         public async Task<IActionResult> Delete(int id)
         {
-            await _eventRepository.DeleteAsync(id);
+            await _eventsService.DeleteAsync(id);
+
             return NoContent();
         }
 
         [HttpGet("my")]
         [Authorize]
-        public async Task<IActionResult> GetUserEvents()
+        public async Task<IEnumerable<EventViewModel>> GetUserEvents()
         {
             var login = User?.Identity?.Name;
-            if (login == null)
-            {
-                return Unauthorized();
-            }
 
-            var userWithEvents = await _userRepository.GetByLoginIncludeEventsAsync(login);
-            if (userWithEvents == null)
-            {
-                return NotFound();
-            }
+            var events = await _eventsService.GetUserEvents(login);
 
-            return Ok(userWithEvents.Events.Select(_mapper.Map<GetEventsResponse>));
+            return events.Select(_mapper.Map<EventViewModel>);
         }
 
         [HttpGet("{id}/participants")]
-        public async Task<IActionResult> GetEventParticipants(int id)
+        public async Task<IEnumerable<UserViewModel>> GetEventParticipants(int id)
         {
-            var eventItem = await _eventRepository.GetByIdAsync(id);
-            if (eventItem == null)
-            {
-                return NotFound();
-            }
+            var participants = await _eventsService.GetEventParticipants(id);
 
-            foreach (var participant in eventItem.Participants)
-            {
-                participant.Events = [];
-                participant.PasswordHash = "";
-                participant.RefreshToken = "";
-            }
-
-            return Ok(eventItem.Participants);
+            return participants.Select(_mapper.Map<UserViewModel>);
         }
 
         [HttpGet("{id}/participants/{participantId}")]
-        public async Task<IActionResult> GetEventParticipant(int id, int participantId)
+        public async Task<UserViewModel> GetEventParticipant(int id, int participantId)
         {
-            var eventItem = await _eventRepository.GetByIdAsync(id);
-            if (eventItem == null)
-            {
-                return NotFound();
-            }
+            var participant = await _eventsService.GetEventParticipant(id, participantId);
 
-            var participant = eventItem.Participants.FirstOrDefault(p => p.Id == participantId);
-            if (participant == null)
-            {
-                return NotFound();
-            }
-
-            participant.Events = [];
-            participant.PasswordHash = "";
-            participant.RefreshToken = "";
-            return Ok(participant);
+            return _mapper.Map<UserViewModel>(participant);
         }
     }
 }

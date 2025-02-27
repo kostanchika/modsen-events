@@ -1,11 +1,11 @@
-﻿using EventsAPI.Models;
+﻿using EventsAPI.BLL.DTO;
 using FluentValidation;
 
-namespace EventsAPI.Validators
+namespace EventsAPI.BLL.Validators
 {
-    public class LoginingUserValidator : AbstractValidator<LoginModel>
+    public class LoginDTOValidatior : AbstractValidator<LoginDTO>
     {
-        public LoginingUserValidator()
+        public LoginDTOValidatior()
         {
             RuleFor(x => x.Login)
                 .MinimumLength(3)

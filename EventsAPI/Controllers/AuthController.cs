@@ -1,11 +1,8 @@
 ﻿using AutoMapper;
-using EventsAPI.DAL.Entities;
-using EventsAPI.DAL.Interfaces;
+using EventsAPI.BLL.DTO;
+using EventsAPI.BLL.Services;
 using EventsAPI.Models;
-using EventsAPI.Services;
-using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
 
 namespace EventsAPI.Controllers
 {
@@ -13,128 +10,40 @@ namespace EventsAPI.Controllers
     [ApiController]
     public class AuthController : ControllerBase
     {
-        private readonly IUserRepository _userRepository;
+        private readonly AuthService _authService;
         private readonly IMapper _mapper;
-        private readonly IValidator<RegisterModel> _registeringUserValidator;
-        private readonly IValidator<LoginModel> _loginingUserValidator;
-        private readonly TokenService _tokenService;
-        private readonly PasswordService _passwordService;
 
-        public AuthController(
-            IUserRepository userRepository,
-            IMapper mapper,
-            IValidator<RegisterModel> registeringUserValidator,
-            IValidator<LoginModel> loginingUserValidator,
-            TokenService tokenService,
-            PasswordService passwordService
-        )
+        public AuthController(AuthService authService, IMapper mapper)
         {
-            _userRepository = userRepository;
+            _authService = authService;
             _mapper = mapper;
-            _registeringUserValidator = registeringUserValidator;
-            _loginingUserValidator = loginingUserValidator;
-            _tokenService = tokenService;
-            _passwordService = passwordService;
         }
 
         [HttpPost("register")]
         public async Task<IActionResult> Register(RegisterModel registeringUser)
         {
-            var validationResult = await _registeringUserValidator.ValidateAsync(registeringUser);
-            if (!validationResult.IsValid)
-            {
-                return BadRequest(validationResult.Errors);
-            }
+            var registerDTO = _mapper.Map<RegisterDTO>(registeringUser);
+            var tokens = await _authService.RegisterAsync(registerDTO);
 
-            var user = _mapper.Map<User>(registeringUser);
-
-            var refreshToken = _tokenService.GenerateRefreshToken();
-            user.RefreshToken = refreshToken.RefreshToken;
-            user.RefreshTokenExpiresAt = refreshToken.ExpiresAt;
-
-            try
-            {
-                user.BirthDateTime = user.BirthDateTime.ToUniversalTime();
-                await _userRepository.AddAsync(user);
-            }
-            catch
-            {
-                return Conflict("Логин или почта уже занят(ы)");
-            }
-
-            var accessToken = _tokenService.GenerateAccessToken(user);
-
-            return Ok(new { accessToken, refreshToken.RefreshToken });
+            return Ok(new { tokens.AccessToken, tokens.RefreshToken });
         }
 
         [HttpPost("login")]
         public async Task<IActionResult> Login(LoginModel logginingInUser)
         {
-            var validationResult = await _loginingUserValidator.ValidateAsync(logginingInUser);
-            if (!validationResult.IsValid)
-            {
-                return BadRequest(validationResult.Errors);
-            }
+            var loginDTO = _mapper.Map<LoginDTO>(logginingInUser);
+            var tokens = await _authService.LoginAsync(loginDTO);
 
-            var user = await _userRepository.GetByLoginAsync(logginingInUser.Login);
-            if (user == null)
-            {
-                return NotFound("Пользователь с данным логином не найден");
-            }
-
-            if (!_passwordService.ValidatePassword(logginingInUser.Password, user.PasswordHash))
-            {
-                return BadRequest("Неверный пароль");
-            }
-
-            var refreshToken = _tokenService.GenerateRefreshToken();
-            user.RefreshToken = refreshToken.RefreshToken;
-            user.RefreshTokenExpiresAt = refreshToken.ExpiresAt;
-            await _userRepository.UpdateAsync(user);
-
-            var accessToken = _tokenService.GenerateAccessToken(user);
-
-            return Ok(new { accessToken, refreshToken.RefreshToken });
+            return Ok(new { tokens.AccessToken, tokens.RefreshToken });
         }
 
         [HttpPost("refresh")]
-        public async Task<IActionResult> Refresh(TokenRequest tokenRequest)
+        public async Task<IActionResult> Refresh(TokensModel tokensRequest)
         {
-            ClaimsPrincipal? principal;
-            try
-            {
-                principal = _tokenService.GetPrincipalFromToken(tokenRequest.AccessToken);
-            }
-            catch
-            {
-                return Unauthorized("Неверный access-токен");
-            }
+            var tokensDTO = _mapper.Map<TokensDTO>(tokensRequest);
+            var tokens = await _authService.RefreshAsync(tokensDTO);
 
-            var login = principal.Identity?.Name;
-            if (login == null)
-            {
-                return Unauthorized("Неверный access-токен");
-            }
-
-            var user = await _userRepository.GetByLoginAsync(login);
-            if (user == null)
-            {
-                return NotFound("Не удалось найти пользователя");
-            }
-
-            if (user.RefreshToken != tokenRequest.RefreshToken || user.RefreshTokenExpiresAt < DateTime.UtcNow)
-            {
-                return Unauthorized("Неверный refresh-токен");
-            }
-
-            var refreshToken = _tokenService.GenerateRefreshToken();
-            user.RefreshToken = refreshToken.RefreshToken;
-            user.RefreshTokenExpiresAt = refreshToken.ExpiresAt;
-
-            await _userRepository.UpdateAsync(user);
-
-            var accessToken = _tokenService.GenerateAccessToken(user);
-            return Ok(new { accessToken, refreshToken.RefreshToken });
+            return Ok(new { tokens.AccessToken, tokens.RefreshToken });
         }
     }
 }

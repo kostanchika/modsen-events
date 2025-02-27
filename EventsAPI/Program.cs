@@ -1,11 +1,15 @@
+using EventsAPI.Adapters;
+using EventsAPI.BLL.DTO;
+using EventsAPI.BLL.Interfaces;
+using EventsAPI.BLL.Mappers;
+using EventsAPI.BLL.Services;
+using EventsAPI.BLL.Validators;
 using EventsAPI.DAL.Data;
 using EventsAPI.DAL.Interfaces;
 using EventsAPI.DAL.Repositories;
 using EventsAPI.Mappers;
 using EventsAPI.Middlewares;
 using EventsAPI.Models;
-using EventsAPI.Services;
-using EventsAPI.Validators;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -29,25 +33,31 @@ namespace EventsAPI
                 options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"))
             );
 
-            builder.Services.AddScoped<IUserRepository, UserRepository>();
-            builder.Services.AddScoped<IEventRepository, EventRepository>();
-
             builder.Services.AddAutoMapper(cfg =>
             {
                 cfg.AddProfile<UserMapper>();
                 cfg.AddProfile<EventMapper>();
+                cfg.AddProfile<UserDTOMapper>();
+                cfg.AddProfile<EventDTOMapper>();
             });
 
             builder.Services.AddFluentValidationAutoValidation();
-            builder.Services.AddScoped<IValidator<RegisterModel>, RegisteringUserValidator>();
-            builder.Services.AddScoped<IValidator<LoginModel>, LoginingUserValidator>();
-            builder.Services.AddScoped<IValidator<CreateEventModel>, CreateEventValidator>();
-            builder.Services.AddScoped<IValidator<ChangeEventModel>, ChangeEventValidator>();
+            builder.Services.AddScoped<IValidator<RegisterDTO>, RegisterDTOValidator>();
+            builder.Services.AddScoped<IValidator<LoginDTO>, LoginDTOValidatior>();
+            builder.Services.AddScoped<IValidator<CreateEventDTO>, CreateEventDTOValidator>();
+            builder.Services.AddScoped<IValidator<ChangeEventDTO>, ChangeEventDTOValidator>();
 
-            builder.Services.AddScoped<TokenService>();
-            builder.Services.AddScoped<ImageService>();
             builder.Services.AddScoped<EventsService>();
+            builder.Services.AddScoped<AuthService>();
             builder.Services.AddScoped<EmailSender>();
+            builder.Services.AddScoped<ImageService>();
+            builder.Services.AddScoped<PasswordService>();
+            builder.Services.AddScoped<TokenService>();
+
+            builder.Services.AddSingleton<IImagePath, WebHostAdapter>();
+
+            builder.Services.AddScoped<IUserRepository, UserRepository>();
+            builder.Services.AddScoped<IEventRepository, EventRepository>();
 
             builder.Services.AddAuthentication(options =>
             {

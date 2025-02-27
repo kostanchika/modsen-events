@@ -7,7 +7,7 @@ namespace EventsAPI.Models
         string Description,
         DateTime EventDateTime,
         string Location,
-        EventCategories Category,
+        EventCategories EventCategories,
         int MaximumParticipants,
         IFormFile? Image
     );

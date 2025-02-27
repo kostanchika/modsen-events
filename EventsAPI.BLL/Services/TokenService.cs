@@ -1,12 +1,13 @@
-﻿using EventsAPI.DAL.Entities;
-using EventsAPI.Models;
+﻿using EventsAPI.BLL.Models;
+using EventsAPI.DAL.Entities;
+using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace EventsAPI.Services
+namespace EventsAPI.BLL.Services
 {
     public class TokenService
     {
@@ -75,7 +76,7 @@ namespace EventsAPI.Services
                 !jwtSecurityToken.Header.Alg
                     .Equals(SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase))
             {
-                throw new SecurityTokenException("Invalid token");
+                throw new SecurityTokenException("Неверный токен");
             }
 
             return principal;

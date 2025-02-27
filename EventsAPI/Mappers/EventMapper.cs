@@ -1,6 +1,9 @@
 ﻿using AutoMapper;
 using EventsAPI.DAL.Entities;
 using EventsAPI.Models;
+using EventsAPI.BLL.DTO;
+using EventsAPI.Adapters;
+using EventsAPI.ViewModels;
 
 namespace EventsAPI.Mappers
 {
@@ -8,10 +11,13 @@ namespace EventsAPI.Mappers
     {
         public EventMapper()
         {
-            CreateMap<CreateEventModel, Event>()
-                .ForMember(dest => dest.EventDateTime, opt => opt.MapFrom(src => src.EventDateTime.ToUniversalTime()));
-            CreateMap<Event, GetEventsResponse>()
-                .ForMember(dest => dest.CurrentParticipants, opt => opt.MapFrom(src => src.Participants.Count));
+            CreateMap<CreateEventModel, CreateEventDTO>()
+                .ForMember(dest => dest.EventDateTime, opt => opt.MapFrom(src => src.EventDateTime.ToUniversalTime()))
+                .ForMember(dest => dest.Image, opt => opt.MapFrom(src => src.Image != null ? new FormFileAdapter(src.Image) : null));
+            CreateMap<ChangeEventModel, ChangeEventDTO>()
+                .ForMember(dest => dest.EventDateTime, opt => opt.MapFrom(src => src.EventDateTime.ToUniversalTime()))
+                .ForMember(dest => dest.Image, opt => opt.MapFrom(src => src.Image != null ? new FormFileAdapter(src.Image) : null));
+            CreateMap<EventDTO, EventViewModel>();
         }
     }
 }
