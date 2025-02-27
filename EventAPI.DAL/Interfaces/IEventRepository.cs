@@ -15,7 +15,6 @@ namespace EventsAPI.DAL.Interfaces
             EventCategories? category
         );
         int GetTotalPages(
-            int page,
             int pageSize,
             string? Name,
             DateTime? dateFrom,

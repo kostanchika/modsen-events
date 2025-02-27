@@ -56,12 +56,11 @@ namespace EventsAPI.DAL.Repositories
         }
 
         public int GetTotalPages(
-            int page,
             int pageSize,
-            string name,
+            string? name,
             DateTime? dateFrom,
             DateTime? dateTo,
-            string location,
+            string? location,
             EventCategories? category
         )
         {
