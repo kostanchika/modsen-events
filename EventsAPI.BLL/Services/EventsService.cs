@@ -150,6 +150,10 @@ namespace EventsAPI.BLL.Services
             var user = await _userRepository.GetByLoginAsync(userLogin, ct)
                         ?? throw new NullReferenceException("Не удалось найти пользователя с данным логином");
 
+            if (eventItem.Participants.FirstOrDefault(p => p.Id == user.Id) != null)
+            {
+                throw new InvalidOperationException("Вы уже подписаны на данное событие");
+            }
 
             eventItem.Participants.Add(user);
             user.Events.Add(eventItem);
@@ -171,6 +175,10 @@ namespace EventsAPI.BLL.Services
             var user = eventItem.Participants.FirstOrDefault(p => p.Login == userLogin)
                         ?? throw new NullReferenceException("Не удалось найти пользователя с данным логином");
 
+            if (eventItem.Participants.FirstOrDefault(p => p.Id == user.Id) == null)
+            {
+                throw new InvalidOperationException("Вы не были прежде подписаны на данное событие");
+            }
 
             eventItem.Participants.Remove(user);
             user.Events.Remove(eventItem);
