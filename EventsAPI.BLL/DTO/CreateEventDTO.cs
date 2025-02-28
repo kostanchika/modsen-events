@@ -12,24 +12,5 @@ namespace EventsAPI.BLL.DTO
         public EventCategories Category { get; set; }
         public int MaximumParticipants { get; set; }
         public IImageFile? Image { get; set; }
-
-        public CreateEventDTO(
-            string name, 
-            string description, 
-            DateTime eventDateTime, 
-            string location, 
-            EventCategories category, 
-            int maximumParticipants, 
-            IImageFile image
-        )
-        {
-            Name = name;
-            Description = description;
-            EventDateTime = eventDateTime;
-            Location = location;
-            Category = category;
-            MaximumParticipants = maximumParticipants;
-            Image = image;
-        }
     }
 }

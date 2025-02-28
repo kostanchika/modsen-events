@@ -61,15 +61,16 @@ namespace EventsAPI.Tests
         {
             var db = CreateDatabase();
             var eventRepository = new EventRepository(db);
-            var creatingEvent = new BLL.DTO.CreateEventDTO(
-                "Игра в футбол",
-                "Надо иметь разряд по футболу",
-                DateTime.UtcNow.AddMonths(1),
-                "Стадион Динамо",
-                EventCategories.Sports,
-                22,
-                null
-            );
+            var creatingEvent = new BLL.DTO.CreateEventDTO
+            {
+                Name = "Игра в футбол",
+                Description = "Надо иметь разряд по футболу",
+                EventDateTime = DateTime.UtcNow.AddMonths(1),
+                Location = "Стадион Динамо",
+                Category = EventCategories.Sports,
+                MaximumParticipants = 22,
+                Image = null
+            };
 
             var config = new MapperConfiguration(cfg => cfg.AddProfile<EventDTOMapper>());
             var mapper = config.CreateMapper();
@@ -92,15 +93,16 @@ namespace EventsAPI.Tests
         {
             var db = CreateDatabase();
             var eventRepository = new EventRepository(db);
-            var creatingEvent = new BLL.DTO.CreateEventDTO(
-                "Игра в футбол",
-                "Надо иметь разряд по футболу",
-                DateTime.UtcNow.AddMonths(1),
-                "Стадион Динамо",
-                EventCategories.Unspecified,
-                22,
-                null
-            );
+            var creatingEvent = new BLL.DTO.CreateEventDTO
+            {
+                Name = "Игра в футбол",
+                Description = "Надо иметь разряд по футболу",
+                EventDateTime = DateTime.UtcNow.AddMonths(1),
+                Location = "Стадион Динамо",
+                Category = EventCategories.Unspecified,
+                MaximumParticipants = 22,
+                Image = null
+            };
 
             var config = new MapperConfiguration(cfg => cfg.AddProfile<EventMapper>());
             var mapper = config.CreateMapper();
