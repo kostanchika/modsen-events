@@ -1,4 +1,7 @@
-﻿using EventsAPI.Services;
+﻿using EventsAPI.BLL.Services;
+using EventsAPI.DAL.Data;
+using EventsAPI.DAL.Entities;
+using EventsAPI.DAL.Repositories;
 using Microsoft.EntityFrameworkCore;
 
 namespace EventsAPI.Tests
@@ -40,7 +43,15 @@ namespace EventsAPI.Tests
 
             var emailSender = new EmailSender(null);
 
-            var eventsService = new EventsService(userRepository, eventRepository, emailSender);
+            var eventsService = new EventsService(
+                userRepository, 
+                eventRepository, 
+                null,
+                null,
+                emailSender,
+                null,
+                null
+            );
 
             if (!eventItem.Participants.Select(u => u.Login).Contains(Login))
             {
@@ -48,14 +59,14 @@ namespace EventsAPI.Tests
                 {
                     if (eventItem.EventDateTime >= DateTime.UtcNow)
                     {
-                        await eventsService.RegisterUserForEventAsync(eventItem, Login);
+                        await eventsService.RegisterUserForEventAsync(eventItem.Id, Login);
                     }
                 }
             }
 
             eventItem = await eventRepository.GetByIdAsync(1);
 
-            Assert.Equal(1, eventItem.Participants.Count);
+            Assert.Single(eventItem.Participants);
         }
 
         [Fact(DisplayName = "Пользователь должен зарегистрироваться на событие только один раз")]
@@ -69,7 +80,15 @@ namespace EventsAPI.Tests
 
             var emailSender = new EmailSender(null);
 
-            var eventsService = new EventsService(userRepository, eventRepository, emailSender);
+            var eventsService = new EventsService(
+                userRepository,
+                eventRepository,
+                null,
+                null,
+                emailSender,
+                null,
+                null
+            );
 
             if (!eventItem.Participants.Select(u => u.Login).Contains(Login))
             {
@@ -77,7 +96,11 @@ namespace EventsAPI.Tests
                 {
                     if (eventItem.EventDateTime >= DateTime.UtcNow)
                     {
-                        await eventsService.RegisterUserForEventAsync(eventItem, Login);
+                        try
+                        {
+                            await eventsService.RegisterUserForEventAsync(eventItem.Id, Login);
+                        }
+                        catch { }
                     }
                 }
             }
@@ -90,14 +113,18 @@ namespace EventsAPI.Tests
                 {
                     if (eventItem.EventDateTime >= DateTime.UtcNow)
                     {
-                        await eventsService.RegisterUserForEventAsync(eventItem, Login);
+                        try
+                        {
+                            await eventsService.RegisterUserForEventAsync(eventItem.Id, Login);
+                        }
+                        catch { }
                     }
                 }
             }
 
             eventItem = await eventRepository.GetByIdAsync(1);
 
-            Assert.Equal(1, eventItem.Participants.Count);
+            Assert.Single(eventItem.Participants);
         }
 
         [Fact(DisplayName = "Пользователь должен зарегистрироваться и отписаться от события")]
@@ -111,7 +138,15 @@ namespace EventsAPI.Tests
 
             var emailSender = new EmailSender(null);
 
-            var eventsService = new EventsService(userRepository, eventRepository, emailSender);
+            var eventsService = new EventsService(
+                userRepository,
+                eventRepository,
+                null,
+                null,
+                emailSender,
+                null,
+                null
+            );
 
             if (!eventItem.Participants.Select(u => u.Login).Contains(Login))
             {
@@ -119,7 +154,7 @@ namespace EventsAPI.Tests
                 {
                     if (eventItem.EventDateTime >= DateTime.UtcNow)
                     {
-                        await eventsService.RegisterUserForEventAsync(eventItem, Login);
+                        await eventsService.RegisterUserForEventAsync(eventItem.Id, Login);
                     }
                 }
             }
@@ -128,13 +163,13 @@ namespace EventsAPI.Tests
             {
                 if (eventItem.EventDateTime >= DateTime.UtcNow)
                 {
-                    await eventsService.UnregisterUserFromEventAsync(eventItem, Login);
+                    await eventsService.UnregisterUserFromEventAsync(eventItem.Id, Login);
                 }
             }
 
             eventItem = await eventRepository.GetByIdAsync(1);
 
-            Assert.Equal(0, eventItem.Participants.Count);
+            Assert.Empty(eventItem.Participants);
         }
 
         [Fact(DisplayName = "Список событий пользователя должен вернуть 1 событие")]
@@ -148,7 +183,15 @@ namespace EventsAPI.Tests
 
             var emailSender = new EmailSender(null);
 
-            var eventsService = new EventsService(userRepository, eventRepository, emailSender);
+            var eventsService = new EventsService(
+                userRepository,
+                eventRepository,
+                null,
+                null,
+                emailSender,
+                null,
+                null
+            );
 
             if (!eventItem.Participants.Select(u => u.Login).Contains(Login))
             {
@@ -156,14 +199,14 @@ namespace EventsAPI.Tests
                 {
                     if (eventItem.EventDateTime >= DateTime.UtcNow)
                     {
-                        await eventsService.RegisterUserForEventAsync(eventItem, Login);
+                        await eventsService.RegisterUserForEventAsync(eventItem.Id, Login);
                     }
                 }
             }
 
             var userEvents = await userRepository.GetByLoginIncludeEventsAsync(Login);
 
-            Assert.Equal(1, userEvents.Events.Count);
+            Assert.Single(userEvents.Events);
         }
 
         [Fact(DisplayName = "Пользователь не должен подписаться на просроченное событие")]
@@ -177,7 +220,15 @@ namespace EventsAPI.Tests
 
             var emailSender = new EmailSender(null);
 
-            var eventsService = new EventsService(userRepository, eventRepository, emailSender);
+            var eventsService = new EventsService(
+                userRepository,
+                eventRepository,
+                null,
+                null,
+                emailSender,
+                null,
+                null
+            );
 
             if (!eventItem.Participants.Select(u => u.Login).Contains(Login))
             {
@@ -185,14 +236,18 @@ namespace EventsAPI.Tests
                 {
                     if (eventItem.EventDateTime >= DateTime.UtcNow)
                     {
-                        await eventsService.RegisterUserForEventAsync(eventItem, Login);
+                        try
+                        {
+                            await eventsService.RegisterUserForEventAsync(eventItem.Id, Login);
+                        }
+                        catch { }
                     }
                 }
             }
 
             eventItem = await eventRepository.GetByIdAsync(1);
 
-            Assert.Equal(0, eventItem.Participants.Count);
+            Assert.Empty(eventItem.Participants);
         }
     }
 }

@@ -1,11 +1,11 @@
 using AutoMapper;
+using EventsAPI.BLL.Mappers;
 using EventsAPI.BLL.Models;
 using EventsAPI.BLL.Validators;
 using EventsAPI.DAL.Data;
 using EventsAPI.DAL.Entities;
 using EventsAPI.DAL.Repositories;
 using EventsAPI.Mappers;
-using EventsAPI.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace EventsAPI.Tests
@@ -71,7 +71,7 @@ namespace EventsAPI.Tests
                 null
             );
 
-            var config = new MapperConfiguration(cfg => cfg.AddProfile<EventMapper>());
+            var config = new MapperConfiguration(cfg => cfg.AddProfile<EventDTOMapper>());
             var mapper = config.CreateMapper();
 
             var creatingEventValidator = new CreateEventDTOValidator();
