@@ -2,7 +2,6 @@ import { FormEventHandler, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import axios from '../axiosConfig.ts';
-import { AxiosError } from 'axios';
 
 const RegisterPage = () => {
   const [login, setLogin] = useState('');
@@ -17,37 +16,20 @@ const RegisterPage = () => {
   const handleRegister: FormEventHandler = async (e) => {
     e.preventDefault();
 
-    try {
-      const response = await axios.post(`/api/auth/register`, {
-        login,
-        password,
-        name,
-        lastName,
-        birthDateTime,
-        email,
-      });
+    const response = await axios.post(`/api/auth/register`, {
+      login,
+      password,
+      name,
+      lastName,
+      birthDateTime,
+      email,
+    });
 
-      if (response.status === 200) {
-        localStorage.setItem('accessToken', response.data.accessToken);
-        localStorage.setItem('refreshToken', response.data.refreshToken);
-        toast.success('Успешный вход!');
-        navigate('/');
-      }
-    } catch (error) {
-      if (!(error instanceof AxiosError)) return;
-      if (!error.response) return;
-      if (error.response.status === 400) {
-        const validationErrors = error.response.data.errors;
-        Object.keys(validationErrors).map((key) =>
-          validationErrors[key].forEach((error: string) => {
-            toast.error(error);
-          })
-        );
-      } else if (error.response.status === 409) {
-        toast.error(error.response.data);
-      } else {
-        toast.error(`Ошибка: ${error.response.status}`);
-      }
+    if (response.status === 200) {
+      localStorage.setItem('accessToken', response.data.accessToken);
+      localStorage.setItem('refreshToken', response.data.refreshToken);
+      toast.success('Успешный вход!');
+      navigate('/');
     }
   };
 

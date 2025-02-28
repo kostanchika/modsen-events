@@ -3,7 +3,6 @@ import { FormEventHandler, useEffect, useState } from 'react';
 import { EventCategories, EventType } from '../types.ts';
 import { getEventCategoryText } from '../helpers/category.ts';
 import axios from '../axiosConfig.ts';
-import { AxiosError } from 'axios';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 import { useParams } from 'react-router';
@@ -55,37 +54,16 @@ const CreateEventPage = () => {
     const formData = new FormData(form);
     const localTime = formData.get('eventDateTime');
     formData.set('eventDateTime', new Date(localTime as string).toISOString());
-    try {
-      if (event) {
-        await axios.put(`/api/events/${event.id}`, formData);
-        toast.success('Событие успешно изменено');
-        navigate(`/events/${event.id}`);
-      } else {
-        const response = await axios.post('/api/events', formData);
-        toast.success('Событие успешно создано');
-        const url = response.headers['location'];
-        const id = url.match(/\/api\/Events\/(\d+)/)[1];
-        navigate(`/events/${id}`);
-      }
-    } catch (error) {
-      if (!(error instanceof AxiosError)) return;
-      if (!error.response) return;
-      if (error.response.status === 400) {
-        const validationErrors = error.response.data.errors;
-        if (!validationErrors) {
-          toast.error(error.response.data);
-          return;
-        }
-        Object.keys(validationErrors).map((key) =>
-          validationErrors[key].forEach((error: string) => {
-            if (!/^[A-Za-z0-9 .,?!']+$/.test(error)) {
-              toast.error(error);
-            }
-          })
-        );
-      } else if (error.response.status === 404) {
-        toast.error(error.response.data);
-      }
+    if (event) {
+      await axios.put(`/api/events/${event.id}`, formData);
+      toast.success('Событие успешно изменено');
+      navigate(`/events/${event.id}`);
+    } else {
+      const response = await axios.post('/api/events', formData);
+      toast.success('Событие успешно создано');
+      const url = response.headers['location'];
+      const id = url.match(/\/api\/Events\/(\d+)/)[1];
+      navigate(`/events/${id}`);
     }
   };
 

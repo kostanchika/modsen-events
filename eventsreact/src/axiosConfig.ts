@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { toast } from 'react-toastify';
 
 const instance = axios.create({
   baseURL: 'http://localhost:8080',
@@ -22,6 +23,11 @@ instance.interceptors.response.use(
     return response;
   },
   async (error) => {
+    if (error.response.status !== 401) {
+      error.response.data.Errors.forEach((error: {ErrorMessage: string}) => {
+        toast.error(error.ErrorMessage);
+      })
+    }
     const originalRequest = error.config;
 
     if (error.response.status === 401 && !originalRequest._retry) {

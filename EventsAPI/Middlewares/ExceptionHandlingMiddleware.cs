@@ -23,7 +23,7 @@ namespace EventsAPI.Middlewares
             catch (ValidationException ex)
             {
                 context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
-                await WriteJsonErrorResponse(context, ex.Message);
+                await WriteJsonErrorResponse(context, ex.Errors);
             }
             catch (SecurityTokenException ex)
             {
@@ -46,12 +46,26 @@ namespace EventsAPI.Middlewares
                 await WriteJsonErrorResponse(context, "Произошла непредвиденная ошибка. Пожалуйста, попробуйте позже.");
             }
         }
+        
+        private static Task WriteJsonErrorResponse(HttpContext context, IEnumerable<FluentValidation.Results.ValidationFailure> errors)
+        {
+            var errorResponse = new
+            {
+                Errors = errors.Select(e => new { e.PropertyName, e.ErrorMessage }),
+                StatusCode = context.Response.StatusCode,
+                Timestamp = DateTime.UtcNow
+            };
+
+            var jsonResponse = JsonSerializer.Serialize(errorResponse);
+            context.Response.ContentType = "application/json";
+            return context.Response.WriteAsync(jsonResponse);
+        }
 
         private static Task WriteJsonErrorResponse(HttpContext context, string message)
         {
             var errorResponse = new
             {
-                Error = message,
+                Errors = new List<FluentValidation.Results.ValidationFailure>() { new("error", message) },
                 StatusCode = context.Response.StatusCode,
                 Timestamp = DateTime.UtcNow
             };

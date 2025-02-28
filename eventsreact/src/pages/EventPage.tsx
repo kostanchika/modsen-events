@@ -5,7 +5,6 @@ import axios from './../axiosConfig.ts';
 import { EventType } from '../types.ts';
 import { formatDate } from '../helpers/date.ts';
 import { toast } from 'react-toastify';
-import { AxiosError } from 'axios';
 import { getEventCategoryText } from '../helpers/category.ts';
 
 const EventPage = () => {
@@ -17,24 +16,16 @@ const EventPage = () => {
 
   const handleParticipate = () => {
     const register = async () => {
-      try {
-        if (!isParticipating) {
-          await axios.put(`/api/events/${id}/register`);
-          toast.success('Вы успешно записались на событие');
-          setRemainTickets(remainTickets - 1);
-        } else {
-          await axios.put(`/api/events/${id}/unregister`);
-          toast.success('Вы успешно отписались от события');
-          setRemainTickets(remainTickets + 1);
-        }
-        setIsParticipating(!isParticipating);
-      } catch (error) {
-        if (!(error instanceof AxiosError)) return;
-        if (error.status === 400) {
-          if (!error.response) return;
-          toast.error(error.response.data);
-        }
+      if (!isParticipating) {
+        await axios.put(`/api/events/${id}/register`);
+        toast.success('Вы успешно записались на событие');
+        setRemainTickets(remainTickets - 1);
+      } else {
+        await axios.put(`/api/events/${id}/unregister`);
+        toast.success('Вы успешно отписались от события');
+        setRemainTickets(remainTickets + 1);
       }
+      setIsParticipating(!isParticipating);
     };
 
     register();
