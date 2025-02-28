@@ -6,6 +6,7 @@ import axios from '../axiosConfig.ts';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 import { useParams } from 'react-router';
+import { jwtDecode } from 'jwt-decode';
 
 const CreateEventPage = () => {
   const [event, setEvent] = useState<EventType>({
@@ -13,13 +14,12 @@ const CreateEventPage = () => {
     name: '',
     eventDateTime: '',
     location: '',
-    category: 0,
+    category: EventCategories.Music,
     maximumParticipants: 0,
     currentParticipants: 0,
     description: '',
     imagePath: '',
   });
-  const [category, setCategory] = useState<number | undefined>(0);
   const navigate = useNavigate();
   const { id } = useParams();
 
@@ -54,7 +54,7 @@ const CreateEventPage = () => {
     const formData = new FormData(form);
     const localTime = formData.get('eventDateTime');
     formData.set('eventDateTime', new Date(localTime as string).toISOString());
-    if (event) {
+    if (event.id !== 0) {
       await axios.put(`/api/events/${event.id}`, formData);
       toast.success('Событие успешно изменено');
       navigate(`/events/${event.id}`);
@@ -72,7 +72,6 @@ const CreateEventPage = () => {
       if (id) {
         const response = await axios.get(`/api/events/${id}`);
         setEvent(response.data);
-        setCategory(response.data.category);
       }
     };
 
@@ -80,10 +79,15 @@ const CreateEventPage = () => {
   }, [id]);
 
   useEffect(() => {
-    if (event) {
-      setCategory(event.category);
+    const jwtToken = localStorage.getItem('accessToken');
+    if (jwtToken) {
+      const decodedToken: { role: string } = jwtDecode(jwtToken);
+      const role = decodedToken.role;
+      if (role !== 'Admin') navigate('/');
+    } else {
+      navigate('/');
     }
-  }, [event]);
+  }, []);
 
   return (
     <>
@@ -117,6 +121,7 @@ const CreateEventPage = () => {
                     .slice(0, 16)
                 }
                 onChange={handleChange}
+                required
               />
             </label>
           </div>
@@ -132,7 +137,7 @@ const CreateEventPage = () => {
             </label>
             <label>
               Категория
-              <select name='category' value={category} onChange={handleChange}>
+              <select name='category' value={event.category} onChange={handleChange}>
                 {generateCategories()}
               </select>
             </label>
@@ -161,7 +166,9 @@ const CreateEventPage = () => {
             />
           </label>
 
-          <button type='submit'>{event ? 'Изменить' : 'Создать'}</button>
+          <button type='submit'>
+            {event.id !== 0 ? 'Изменить' : 'Создать'}
+          </button>
         </form>
       </div>
     </>
