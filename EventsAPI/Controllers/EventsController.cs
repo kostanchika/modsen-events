@@ -95,7 +95,7 @@ namespace EventsAPI.Controllers
         {
             var login = User?.Identity?.Name;
 
-            var events = await _eventsService.GetUserEvents(login, ct);
+            var events = await _eventsService.GetUserEventsAsync(login, ct);
 
             return events.Select(_mapper.Map<EventViewModel>);
         }
@@ -103,7 +103,7 @@ namespace EventsAPI.Controllers
         [HttpGet("{id}/participants")]
         public async Task<IEnumerable<UserViewModel>> GetEventParticipants(int id, CancellationToken ct)
         {
-            var participants = await _eventsService.GetEventParticipants(id, ct);
+            var participants = await _eventsService.GetEventParticipantsAsync(id, ct);
 
             return participants.Select(_mapper.Map<UserViewModel>);
         }
@@ -111,7 +111,7 @@ namespace EventsAPI.Controllers
         [HttpGet("{id}/participants/{participantId}")]
         public async Task<UserViewModel> GetEventParticipant(int id, int participantId, CancellationToken ct)
         {
-            var participant = await _eventsService.GetEventParticipant(id, participantId, ct);
+            var participant = await _eventsService.GetEventParticipantAsync(id, participantId, ct);
 
             return _mapper.Map<UserViewModel>(participant);
         }

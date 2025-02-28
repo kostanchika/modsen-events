@@ -184,7 +184,7 @@ namespace EventsAPI.BLL.Services
             await _eventRepository.DeleteAsync(eventId, ct);
         }
 
-        public async Task<IEnumerable<EventDTO>> GetUserEvents(string? login, CancellationToken ct = default)
+        public async Task<IEnumerable<EventDTO>> GetUserEventsAsync(string? login, CancellationToken ct = default)
         {
             if (login == null)
             {
@@ -200,7 +200,7 @@ namespace EventsAPI.BLL.Services
             return userWithEvents.Events.Select(_mapper.Map<EventDTO>);
         }
 
-        public async Task<IEnumerable<UserDTO>> GetEventParticipants(int eventId, CancellationToken ct = default)
+        public async Task<IEnumerable<UserDTO>> GetEventParticipantsAsync(int eventId, CancellationToken ct = default)
         {
             var eventItem = await _eventRepository.GetByIdAsync(eventId, ct);
             if (eventItem == null)
@@ -211,7 +211,7 @@ namespace EventsAPI.BLL.Services
             return eventItem.Participants.Select(_mapper.Map<UserDTO>);
         }
 
-        public async Task<UserDTO> GetEventParticipant(int eventId, int participantId, CancellationToken ct = default)
+        public async Task<UserDTO> GetEventParticipantAsync(int eventId, int participantId, CancellationToken ct = default)
         {
             var eventItem = await _eventRepository.GetByIdAsync(eventId, ct);
             if (eventItem == null)
