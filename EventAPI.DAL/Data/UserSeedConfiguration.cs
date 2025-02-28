@@ -4,9 +4,9 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace EventsAPI.DAL.Data
 {
-    internal class UserSeedConfiguration : IEntityTypeConfiguration<Event>
+    internal class UserSeedConfiguration : IEntityTypeConfiguration<User>
     {
-        public void Configure(EntityTypeBuilder<Event> entity)
+        public void Configure(EntityTypeBuilder<User> entity)
         {
             entity.HasData(
                 new User
@@ -18,7 +18,6 @@ namespace EventsAPI.DAL.Data
                     LastName = "Главный",
                     BirthDateTime = new DateTime(2005, 3, 1, 3, 0, 0).ToUniversalTime(),
                     Email = "admin@gmail.com",
-                    Events = [],
                     RefreshToken = "_",
                     RefreshTokenExpiresAt = new DateTime(2025, 2, 24, 23, 0, 0).ToUniversalTime(),
                     Role = "Admin"

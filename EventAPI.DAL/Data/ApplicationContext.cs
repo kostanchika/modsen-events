@@ -6,6 +6,7 @@ namespace EventsAPI.DAL.Data
     {
         public ApplicationContext(DbContextOptions<ApplicationContext> options) : base(options)
         {
+            Database.EnsureDeleted();
             Database.EnsureCreated();
         }
 
@@ -15,7 +16,7 @@ namespace EventsAPI.DAL.Data
 
             modelBuilder.ApplyConfiguration(new UserConfiguration());
             modelBuilder.ApplyConfiguration(new EventConfiguration());
-
+            
             if (Database.IsNpgsql())
             {
                 modelBuilder.ApplyConfiguration(new UserSeedConfiguration());
