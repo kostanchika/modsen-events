@@ -53,7 +53,8 @@ namespace EventsAPI.Tests
                 filters.DateFrom,
                 filters.DateTo,
                 filters.Location,
-                filters.Category));
+                filters.Category)
+            );
         }
 
         [Fact(DisplayName = "Создание корректного события")]
