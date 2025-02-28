@@ -3,9 +3,9 @@
 namespace EventsAPI.Models
 {
     public record class ChangeEventModel(
-        string Description,
+        string? Description,
         DateTime EventDateTime,
-        string Location,
+        string? Location,
         EventCategories Category,
         int MaximumParticipants,
         IFormFile? Image
