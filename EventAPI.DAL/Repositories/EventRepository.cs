@@ -8,17 +8,17 @@ namespace EventsAPI.DAL.Repositories
     public class EventRepository : Repository<Event>, IEventRepository
     {
         public EventRepository(ApplicationContext context) : base(context) { }
-        new public async Task<Event?> GetByIdAsync(int id)
+        new public async Task<Event?> GetByIdAsync(int id, CancellationToken ct)
         {
-            return await _dbSet.Include(e => e.Participants).FirstOrDefaultAsync(e => e.Id == id);
+            return await _dbSet.Include(e => e.Participants).FirstOrDefaultAsync(e => e.Id == id, ct);
         }
         public IEnumerable<Event> GetAllEventsWithFilters(
             int page,
             int pageSize,
-            string name,
+            string? name,
             DateTime? dateFrom,
             DateTime? dateTo,
-            string location,
+            string? location,
             EventCategories? category
         )
         {
@@ -55,13 +55,14 @@ namespace EventsAPI.DAL.Repositories
                         .Take(pageSize);
         }
 
-        public int GetTotalPages(
+        public async Task<int> GetTotalPagesAsync(
             int pageSize,
             string? name,
             DateTime? dateFrom,
             DateTime? dateTo,
             string? location,
-            EventCategories? category
+            EventCategories? category,
+            CancellationToken ct = default
         )
         {
             var query = _dbSet.AsQueryable();
@@ -91,9 +92,8 @@ namespace EventsAPI.DAL.Repositories
                 query = query.Where(e => e.Category == category);
             }
 
-            int totalItems = query.Count();
+            int totalItems = await query.CountAsync(ct);
             return (int)Math.Ceiling((double)totalItems / pageSize);
         }
-
     }
 }

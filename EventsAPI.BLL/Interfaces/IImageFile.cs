@@ -5,6 +5,6 @@
         string FileName { get; }
         string ContentType { get; }
         long Length { get; }
-        Task CopyToAsync(Stream target);
+        Task CopyToAsync(Stream target, CancellationToken ct = default);
     }
 }

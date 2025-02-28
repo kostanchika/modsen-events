@@ -40,6 +40,11 @@ namespace EventsAPI.Middlewares
                 context.Response.StatusCode = (int)HttpStatusCode.Conflict;
                 await WriteJsonErrorResponse(context, ex.Message);
             }
+            catch (OperationCanceledException ex)
+            {
+                context.Response.StatusCode = 499;
+                await WriteJsonErrorResponse(context, "Подключение было разорвано клиентом");
+            }
             catch (Exception ex)
             {
                 context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;

@@ -4,7 +4,7 @@ namespace EventsAPI.DAL.Interfaces
 {
     public interface IEventRepository : IRepository<Event>
     {
-        new Task<Event?> GetByIdAsync(int id);
+        new Task<Event?> GetByIdAsync(int id, CancellationToken ct);
         IEnumerable<Event> GetAllEventsWithFilters(
             int page,
             int pageSize,
@@ -14,13 +14,14 @@ namespace EventsAPI.DAL.Interfaces
             string? Location,
             EventCategories? category
         );
-        int GetTotalPages(
+        Task<int> GetTotalPagesAsync(
             int pageSize,
             string? Name,
             DateTime? dateFrom,
             DateTime? dateTo,
             string? Location,
-            EventCategories? category
+            EventCategories? category,
+            CancellationToken ct = default
         );
     }
 }

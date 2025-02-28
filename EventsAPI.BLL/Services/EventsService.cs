@@ -5,6 +5,7 @@ using EventsAPI.BLL.Models;
 using EventsAPI.DAL.Entities;
 using EventsAPI.DAL.Interfaces;
 using FluentValidation;
+using Microsoft.EntityFrameworkCore;
 
 namespace EventsAPI.BLL.Services
 {
@@ -52,29 +53,30 @@ namespace EventsAPI.BLL.Services
             return events.Select(_mapper.Map<EventDTO>);
         }
 
-        public int GetTotalPages(EventFiltersModel filters)
+        public async Task<int> GetTotalPagesAsync(EventFiltersModel filters, CancellationToken ct = default)
         {
-            return _eventRepository.GetTotalPages(
+            return await _eventRepository.GetTotalPagesAsync(
                 filters.PageSize,
                 filters.Name,
                 filters.DateFrom,
                 filters.DateTo,
                 filters.Location,
-                filters.Category
+                filters.Category,
+                ct
             );
         }
 
-        public async Task<EventDTO> GetEventAsync(int id)
+        public async Task<EventDTO> GetEventAsync(int id, CancellationToken ct = default)
         {
-            var eventItem = await _eventRepository.GetByIdAsync(id)
+            var eventItem = await _eventRepository.GetByIdAsync(id, ct)
                              ?? throw new NullReferenceException("Событие не найдено");
 
             return _mapper.Map<EventDTO>(eventItem);
         }
 
-        public async Task<EventDTO> CreateEventAsync(CreateEventDTO creatingEvent)
+        public async Task<EventDTO> CreateEventAsync(CreateEventDTO creatingEvent, CancellationToken ct = default)
         {
-            var validationResult = await _creatingEventValidator.ValidateAsync(creatingEvent);
+            var validationResult = await _creatingEventValidator.ValidateAsync(creatingEvent, ct);
             if (!validationResult.IsValid)
             {
                 throw new ValidationException(validationResult.Errors);
@@ -82,21 +84,21 @@ namespace EventsAPI.BLL.Services
 
             var eventItem = _mapper.Map<Event>(creatingEvent);
 
-            await UploadImageAsync(eventItem, creatingEvent.Image);
+            await UploadImageAsync(eventItem, creatingEvent.Image, ct);
 
-            await _eventRepository.AddAsync(eventItem);
+            await _eventRepository.AddAsync(eventItem, ct);
 
             var eventDTO = _mapper.Map<EventDTO>(eventItem);
 
             return eventDTO;
         }
 
-        public async Task<EventDTO> ChangeEventAsync(int id, ChangeEventDTO newData)
+        public async Task<EventDTO> ChangeEventAsync(int id, ChangeEventDTO newData, CancellationToken ct = default)
         {
-            var eventItem = await _eventRepository.GetByIdAsync(id)
+            var eventItem = await _eventRepository.GetByIdAsync(id, ct)
                              ?? throw new NullReferenceException("Событие не найдено");
 
-            var validationResult = await _changingEventValidator.ValidateAsync(newData);
+            var validationResult = await _changingEventValidator.ValidateAsync(newData, ct);
             if (!validationResult.IsValid)
             {
                 throw new ValidationException(validationResult.Errors);
@@ -104,17 +106,19 @@ namespace EventsAPI.BLL.Services
 
             if (newData.MaximumParticipants < eventItem.Participants.Count)
             {
-                throw new InvalidOperationException("Новое максимальное количество участников не может быть больше текущего количества");
+                throw new InvalidOperationException(
+                    "Новое максимальное количество участников не может быть больше текущего количества"
+                );
             }
 
-            await UploadImageAsync(eventItem, newData.Image);
+            await UploadImageAsync(eventItem, newData.Image, ct);
 
-            await UpdateEventAsync(eventItem, newData);
+            await UpdateEventAsync(eventItem, newData, ct);
 
             return _mapper.Map<EventDTO>(eventItem);
         }
 
-        public async Task UpdateEventAsync(Event eventItem, ChangeEventDTO newData)
+        public async Task UpdateEventAsync(Event eventItem, ChangeEventDTO newData, CancellationToken ct = default)
         {
             bool isKeyFieldsChanged = eventItem.Location != newData.Location ||
                                       eventItem.EventDateTime != newData.EventDateTime;
@@ -125,17 +129,17 @@ namespace EventsAPI.BLL.Services
             eventItem.Category = newData.Category;
             eventItem.MaximumParticipants = newData.MaximumParticipants;
 
-            await _eventRepository.UpdateAsync(eventItem);
+            await _eventRepository.UpdateAsync(eventItem, ct);
 
             if (isKeyFieldsChanged)
             {
-                await NotifyParticipantsAsync(eventItem);
+                await NotifyParticipantsAsync(eventItem, ct);
             }
         }
 
-        public async Task RegisterUserForEventAsync(int eventId, string? userLogin)
+        public async Task RegisterUserForEventAsync(int eventId, string? userLogin, CancellationToken ct = default)
         {
-            var eventItem = await _eventRepository.GetByIdAsync(eventId)
+            var eventItem = await _eventRepository.GetByIdAsync(eventId, ct)
                 ?? throw new NullReferenceException("Не удалось найти событие");
 
             if (userLogin == null)
@@ -143,19 +147,20 @@ namespace EventsAPI.BLL.Services
                 throw new NullReferenceException("Не удалось найти пользователя с данным логином");
             }
 
-            var user = await _userRepository.GetByLoginAsync(userLogin)
+            var user = await _userRepository.GetByLoginAsync(userLogin, ct)
                         ?? throw new NullReferenceException("Не удалось найти пользователя с данным логином");
+
 
             eventItem.Participants.Add(user);
             user.Events.Add(eventItem);
 
-            await _eventRepository.UpdateAsync(eventItem);
-            await _userRepository.UpdateAsync(user);
+            await _eventRepository.UpdateAsync(eventItem, ct);
+            await _userRepository.UpdateAsync(user, ct);
         }
 
-        public async Task UnregisterUserFromEventAsync(int eventId, string? userLogin)
+        public async Task UnregisterUserFromEventAsync(int eventId, string? userLogin, CancellationToken ct = default)
         {
-            var eventItem = await _eventRepository.GetByIdAsync(eventId)
+            var eventItem = await _eventRepository.GetByIdAsync(eventId, ct)
                 ?? throw new NullReferenceException("Не удалось найти событие");
 
             if (userLogin == null)
@@ -166,26 +171,27 @@ namespace EventsAPI.BLL.Services
             var user = eventItem.Participants.FirstOrDefault(p => p.Login == userLogin)
                         ?? throw new NullReferenceException("Не удалось найти пользователя с данным логином");
 
+
             eventItem.Participants.Remove(user);
             user.Events.Remove(eventItem);
 
-            await _eventRepository.UpdateAsync(eventItem);
-            await _userRepository.UpdateAsync(user);
+            await _eventRepository.UpdateAsync(eventItem, ct);
+            await _userRepository.UpdateAsync(user, ct);
         }
 
-        public async Task DeleteAsync(int eventId)
+        public async Task DeleteAsync(int eventId, CancellationToken ct = default)
         {
-            await _eventRepository.DeleteAsync(eventId);
+            await _eventRepository.DeleteAsync(eventId, ct);
         }
 
-        public async Task<IEnumerable<EventDTO>> GetUserEvents(string? login)
+        public async Task<IEnumerable<EventDTO>> GetUserEvents(string? login, CancellationToken ct = default)
         {
             if (login == null)
             {
                 throw new NullReferenceException("Пользователь с таким логином не найден");
             }
 
-            var userWithEvents = await _userRepository.GetByLoginIncludeEventsAsync(login);
+            var userWithEvents = await _userRepository.GetByLoginIncludeEventsAsync(login, ct);
             if (userWithEvents == null)
             {
                 throw new Exception("Не удалось получить список событий пользователя");
@@ -194,9 +200,9 @@ namespace EventsAPI.BLL.Services
             return userWithEvents.Events.Select(_mapper.Map<EventDTO>);
         }
 
-        public async Task<IEnumerable<UserDTO>> GetEventParticipants(int eventId)
+        public async Task<IEnumerable<UserDTO>> GetEventParticipants(int eventId, CancellationToken ct = default)
         {
-            var eventItem = await _eventRepository.GetByIdAsync(eventId);
+            var eventItem = await _eventRepository.GetByIdAsync(eventId, ct);
             if (eventItem == null)
             {
                 throw new NullReferenceException("Не удалось найти событие");
@@ -205,9 +211,9 @@ namespace EventsAPI.BLL.Services
             return eventItem.Participants.Select(_mapper.Map<UserDTO>);
         }
 
-        public async Task<UserDTO> GetEventParticipant(int eventId, int participantId)
+        public async Task<UserDTO> GetEventParticipant(int eventId, int participantId, CancellationToken ct = default)
         {
-            var eventItem = await _eventRepository.GetByIdAsync(eventId);
+            var eventItem = await _eventRepository.GetByIdAsync(eventId, ct);
             if (eventItem == null)
             {
                 throw new NullReferenceException("Не удалось найти событие");
@@ -222,15 +228,15 @@ namespace EventsAPI.BLL.Services
             return _mapper.Map<UserDTO>(participant);
         }
 
-        private async Task UploadImageAsync(Event eventItem, IImageFile? image)
+        private async Task UploadImageAsync(Event eventItem, IImageFile? image, CancellationToken ct = default)
         {
             if (image != null && image.Length > 0)
             {
-                eventItem.ImagePath = await _imageService.UploadImageAsync(image);
+                eventItem.ImagePath = await _imageService.UploadImageAsync(image, ct);
             }
         }
 
-        private async Task NotifyParticipantsAsync(Event eventItem)
+        private async Task NotifyParticipantsAsync(Event eventItem, CancellationToken ct = default)
         {
             var message = $"Новая информация: {eventItem.Location}, {eventItem.EventDateTime:dd.MM.yyyy HH:mm}";
             foreach (var participant in eventItem.Participants)
@@ -238,7 +244,8 @@ namespace EventsAPI.BLL.Services
                 await _emailSender.SendEmailAsync(
                     participant.Email,
                     $"Информация о месте проведения события {eventItem.Name} была обновлена",
-                    message
+                    message,
+                    ct
                 );
             }
         }

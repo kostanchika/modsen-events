@@ -13,7 +13,7 @@ namespace EventsAPI.BLL.Services
             _configuration = configuration;
         }
 
-        public async Task SendEmailAsync(string email, string subject, string message)
+        public async Task SendEmailAsync(string email, string subject, string message, CancellationToken ct = default)
         {
             var emailMessage = new MimeMessage();
 
@@ -24,10 +24,10 @@ namespace EventsAPI.BLL.Services
 
             using (var client = new SmtpClient())
             {
-                await client.ConnectAsync(_configuration["Email:SmtpServer"], int.Parse(_configuration["Email:Port"]), false);
-                await client.AuthenticateAsync(_configuration["Email:Username"], _configuration["Email:Password"]);
-                await client.SendAsync(emailMessage);
-                await client.DisconnectAsync(true);
+                await client.ConnectAsync(_configuration["Email:SmtpServer"], int.Parse(_configuration["Email:Port"]), false, ct);
+                await client.AuthenticateAsync(_configuration["Email:Username"], _configuration["Email:Password"], ct);
+                await client.SendAsync(emailMessage, ct);
+                await client.DisconnectAsync(true, ct);
             }
         }
     }

@@ -34,9 +34,9 @@ namespace EventsAPI.BLL.Services
             _mapper = mapper;
         }
 
-        public async Task<TokensDTO> RegisterAsync(RegisterDTO registeringUser)
+        public async Task<TokensDTO> RegisterAsync(RegisterDTO registeringUser, CancellationToken ct = default)
         {
-            var validationResult = await _registeringUserValidator.ValidateAsync(registeringUser);
+            var validationResult = await _registeringUserValidator.ValidateAsync(registeringUser, ct);
             if (!validationResult.IsValid)
             {
                 throw new ValidationException(validationResult.Errors);
@@ -51,9 +51,13 @@ namespace EventsAPI.BLL.Services
             try
             {
                 user.BirthDateTime = user.BirthDateTime.ToUniversalTime();
-                await _userRepository.AddAsync(user);
+                await _userRepository.AddAsync(user, ct);
             }
-            catch
+            catch (OperationCanceledException)
+            {
+                throw;
+            }
+            catch (Exception ex)
             {
                 throw new InvalidOperationException("Логин или почта уже занят(ы)");
             }
@@ -63,16 +67,15 @@ namespace EventsAPI.BLL.Services
             return new TokensDTO(accessToken, refreshToken.RefreshToken);
         }
 
-
-        public async Task<TokensDTO> LoginAsync(LoginDTO logginingInUser)
+        public async Task<TokensDTO> LoginAsync(LoginDTO logginingInUser, CancellationToken ct = default)
         {
-            var validationResult = await _loginingUserValidator.ValidateAsync(logginingInUser);
+            var validationResult = await _loginingUserValidator.ValidateAsync(logginingInUser, ct);
             if (!validationResult.IsValid)
             {
                 throw new ValidationException(validationResult.Errors);
             }
 
-            var user = await _userRepository.GetByLoginAsync(logginingInUser.Login);
+            var user = await _userRepository.GetByLoginAsync(logginingInUser.Login, ct);
             if (user == null)
             {
                 throw new NullReferenceException("Пользователь не найден");
@@ -86,14 +89,14 @@ namespace EventsAPI.BLL.Services
             var refreshToken = _tokenService.GenerateRefreshToken();
             user.RefreshToken = refreshToken.RefreshToken;
             user.RefreshTokenExpiresAt = refreshToken.ExpiresAt;
-            await _userRepository.UpdateAsync(user);
+            await _userRepository.UpdateAsync(user, ct);
 
             var accessToken = _tokenService.GenerateAccessToken(user);
 
             return new TokensDTO(accessToken, refreshToken.RefreshToken);
         }
 
-        public async Task<TokensDTO> RefreshAsync(TokensDTO tokens)
+        public async Task<TokensDTO> RefreshAsync(TokensDTO tokens, CancellationToken ct = default)
         {
             ClaimsPrincipal principal;
             try
@@ -111,7 +114,7 @@ namespace EventsAPI.BLL.Services
                 throw new SecurityTokenException("Неверный access-token");
             }
 
-            var user = await _userRepository.GetByLoginAsync(login);
+            var user = await _userRepository.GetByLoginAsync(login, ct);
             if (user == null)
             {
                 throw new NullReferenceException("Пользователь не найден");
@@ -126,7 +129,7 @@ namespace EventsAPI.BLL.Services
             user.RefreshToken = refreshToken.RefreshToken;
             user.RefreshTokenExpiresAt = refreshToken.ExpiresAt;
 
-            await _userRepository.UpdateAsync(user);
+            await _userRepository.UpdateAsync(user, ct);
 
             var accessToken = _tokenService.GenerateAccessToken(user);
             return new TokensDTO(accessToken, refreshToken.RefreshToken);

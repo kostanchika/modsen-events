@@ -9,14 +9,14 @@ namespace EventsAPI.DAL.Repositories
     {
         public UserRepository(ApplicationContext context) : base(context) { }
 
-        public async Task<User?> GetByLoginAsync(string login)
+        public async Task<User?> GetByLoginAsync(string login, CancellationToken ct = default)
         {
-            return await _dbSet.FirstOrDefaultAsync(u => u.Login == login);
+            return await _dbSet.FirstOrDefaultAsync(u => u.Login == login, ct);
         }
 
-        public async Task<User?> GetByLoginIncludeEventsAsync(string login)
+        public async Task<User?> GetByLoginIncludeEventsAsync(string login, CancellationToken ct = default)
         {
-            return await _dbSet.Include(u => u.Events).FirstOrDefaultAsync(u => u.Login == login);
+            return await _dbSet.Include(u => u.Events).FirstOrDefaultAsync(u => u.Login == login, ct);
         }
     }
 }

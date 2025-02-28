@@ -10,7 +10,7 @@ namespace EventsAPI.BLL.Services
             _environment = environment;
         }
 
-        public async Task<string> UploadImageAsync(IImageFile image)
+        public async Task<string> UploadImageAsync(IImageFile image, CancellationToken ct = default)
         {
             if (!IsImage(image))
             {
@@ -22,7 +22,7 @@ namespace EventsAPI.BLL.Services
             var filePath = Path.Combine(uploadsFolder, uniqueFileName);
             using (var fileStream = new FileStream(filePath, FileMode.Create))
             {
-                await image.CopyToAsync(fileStream);
+                await image.CopyToAsync(fileStream, ct);
             }
             return $"/images/{uniqueFileName}";
         }

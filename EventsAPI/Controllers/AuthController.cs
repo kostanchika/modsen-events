@@ -20,28 +20,28 @@ namespace EventsAPI.Controllers
         }
 
         [HttpPost("register")]
-        public async Task<IActionResult> Register(RegisterModel registeringUser)
+        public async Task<IActionResult> Register(RegisterModel registeringUser, CancellationToken ct)
         {
             var registerDTO = _mapper.Map<RegisterDTO>(registeringUser);
-            var tokens = await _authService.RegisterAsync(registerDTO);
+            var tokens = await _authService.RegisterAsync(registerDTO, ct);
 
             return Ok(new { tokens.AccessToken, tokens.RefreshToken });
         }
 
         [HttpPost("login")]
-        public async Task<IActionResult> Login(LoginModel logginingInUser)
+        public async Task<IActionResult> Login(LoginModel logginingInUser, CancellationToken ct)
         {
             var loginDTO = _mapper.Map<LoginDTO>(logginingInUser);
-            var tokens = await _authService.LoginAsync(loginDTO);
+            var tokens = await _authService.LoginAsync(loginDTO, ct);
 
             return Ok(new { tokens.AccessToken, tokens.RefreshToken });
         }
 
         [HttpPost("refresh")]
-        public async Task<IActionResult> Refresh(TokensModel tokensRequest)
+        public async Task<IActionResult> Refresh(TokensModel tokensRequest, CancellationToken ct)
         {
             var tokensDTO = _mapper.Map<TokensDTO>(tokensRequest);
-            var tokens = await _authService.RefreshAsync(tokensDTO);
+            var tokens = await _authService.RefreshAsync(tokensDTO, ct);
 
             return Ok(new { tokens.AccessToken, tokens.RefreshToken });
         }
