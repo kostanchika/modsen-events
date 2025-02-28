@@ -12,15 +12,17 @@ namespace EventsAPI.BLL.Services
     {
         private readonly IUserRepository _userRepository;
         private readonly IEventRepository _eventRepository;
-        private readonly EmailSender _emailSender;
         private readonly IValidator<CreateEventDTO> _creatingEventValidator;
         private readonly IValidator<ChangeEventDTO> _changingEventValidator;
+        private readonly EmailSender _emailSender;
         private readonly ImageService _imageService;
         private readonly IMapper _mapper;
 
         public EventsService(
             IUserRepository userRepository,
             IEventRepository eventRepository,
+            IValidator<CreateEventDTO> creatingEventValidator,
+            IValidator<ChangeEventDTO> changingEventValidator,
             EmailSender emailSender,
             ImageService imageService,
             IMapper mapper
@@ -28,6 +30,8 @@ namespace EventsAPI.BLL.Services
         {
             _userRepository = userRepository;
             _eventRepository = eventRepository;
+            _creatingEventValidator = creatingEventValidator;
+            _changingEventValidator = changingEventValidator;
             _emailSender = emailSender;
             _imageService = imageService;
             _mapper = mapper;
