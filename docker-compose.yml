@@ -1,5 +1,5 @@
 ---
-name: events
+name: events-unique-name-12345
 services:
   eventsapi:
     image: ${DOCKER_REGISTRY-}eventsapi
