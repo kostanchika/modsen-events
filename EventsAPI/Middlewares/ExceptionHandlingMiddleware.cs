@@ -25,6 +25,11 @@ namespace EventsAPI.Middlewares
                 context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
                 await WriteJsonErrorResponse(context, ex.Errors);
             }
+            catch (ArgumentException ex)
+            {
+                context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                await WriteJsonErrorResponse(context, ex.Message);
+            }
             catch (SecurityTokenException ex)
             {
                 context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;

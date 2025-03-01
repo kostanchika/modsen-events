@@ -154,7 +154,7 @@ const CreateEventPage = () => {
             </label>
             <label>
               Изображение
-              <input type='file' name='image' />
+              <input type='file' name='image' accept='image/*' />
             </label>
           </div>
           <label>

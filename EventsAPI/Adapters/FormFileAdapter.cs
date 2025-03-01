@@ -13,7 +13,7 @@ namespace EventsAPI.Adapters
         public string FileName => _formFile.FileName;
         public string ContentType => _formFile.ContentType;
         public long Length => _formFile.Length;
-        public async Task CopyToAsync(Stream target, CancellationToken ct = default)
+        public async Task CopyToAsync(FileStream target, CancellationToken ct = default)
         {
             await _formFile.CopyToAsync(target, ct);
         }
