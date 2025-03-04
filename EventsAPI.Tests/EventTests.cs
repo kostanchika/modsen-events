@@ -44,8 +44,8 @@ namespace EventsAPI.Tests
 
             var config = new MapperConfiguration(cfg =>
             {
-                cfg.AddProfile<EventDTOMapper>();
-                cfg.AddProfile<UserDTOMapper>();
+                cfg.AddProfile<EventToEventDtoMapper>();
+                cfg.AddProfile<UserToUserDtoMapper>();
             });
             var mapper = config.CreateMapper();
 

@@ -1,16 +1,14 @@
 ﻿using AutoMapper;
-using EventsAPI.Models;
 using EventsAPI.BLL.DTO;
+using EventsAPI.Models;
 
 namespace EventsAPI.Mappers
 {
-    public class UserMapper : Profile
+    public class RegisterModelToRegisterDtoMapper : Profile
     {
-        public UserMapper()
+        public RegisterModelToRegisterDtoMapper()
         {
             CreateMap<RegisterModel, RegisterDTO>();
-            CreateMap<LoginModel, LoginDTO>();
         }
-
     }
 }

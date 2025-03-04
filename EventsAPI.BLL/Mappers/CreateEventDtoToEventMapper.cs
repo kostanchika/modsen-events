@@ -1,17 +1,20 @@
 ﻿using AutoMapper;
 using EventsAPI.BLL.DTO;
 using EventsAPI.DAL.Entities;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace EventsAPI.BLL.Mappers
 {
-    public class EventDTOMapper: Profile
+    public class CreateEventDtoToEventMapper : Profile
     {
-        public EventDTOMapper()
+        public CreateEventDtoToEventMapper()
         {
             CreateMap<CreateEventDTO, Event>()
                 .ForMember(dest => dest.EventDateTime, opt => opt.MapFrom(src => src.EventDateTime.ToUniversalTime()));
-            CreateMap<Event, EventDTO>()
-                .ForMember(dest => dest.CurrentParticipants, opt => opt.MapFrom(src => src.Participants.Count));
         }
     }
 }
