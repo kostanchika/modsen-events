@@ -31,24 +31,19 @@ namespace EventsAPI.DAL.Repositories
             await _context.SaveChangesAsync(ct);
         }
 
-        public async Task<T?> DeleteAsync(int id, CancellationToken ct = default)
+        public async Task DeleteAsync(int id, CancellationToken ct = default)
         {
             var entity = new T { Id = id };
 
             _dbSet.Attach(entity);
             _dbSet.Remove(entity);
             await _context.SaveChangesAsync(ct);
-
-            return entity;
         }
 
-        public async Task<T> UpdateAsync(T entity, CancellationToken ct = default)
+        public async Task UpdateAsync(T entity, CancellationToken ct = default)
         {
             _dbSet.Entry(entity).State = EntityState.Modified;
             await _context.SaveChangesAsync(ct);
-
-            return entity;
-
         }
     }
 }
