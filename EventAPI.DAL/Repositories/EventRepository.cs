@@ -50,9 +50,9 @@ namespace EventsAPI.DAL.Repositories
             }
 
             return query.Include(e => e.Participants)
-                        .AsEnumerable()
                         .Skip((page - 1) * pageSize)
-                        .Take(pageSize);
+                        .Take(pageSize)
+                        .AsEnumerable();
         }
 
         public async Task<int> GetTotalPagesAsync(
