@@ -73,7 +73,7 @@ namespace EventsAPI.Tests
                 Image = null
             };
 
-            var config = new MapperConfiguration(cfg => cfg.AddProfile<EventToEventDtoMapper>());
+            var config = new MapperConfiguration(cfg => cfg.AddProfile<CreateEventDtoToEventMapper>());
             var mapper = config.CreateMapper();
 
             var creatingEventValidator = new CreateEventDTOValidator();
