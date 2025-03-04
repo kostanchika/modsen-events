@@ -1,6 +1,8 @@
-﻿namespace EventsAPI.DAL.Interfaces
+﻿using EventsAPI.DAL.Entities;
+
+namespace EventsAPI.DAL.Interfaces
 {
-    public interface IRepository<T> where T : class
+    public interface IRepository<T> where T : EntityBase, new()
     {
         Task<IEnumerable<T>> GetAllAsync(CancellationToken ct = default);
         Task<T?> GetByIdAsync(int id, CancellationToken ct = default);

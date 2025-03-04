@@ -1,6 +1,6 @@
 ﻿namespace EventsAPI.DAL.Entities
 {
-    public class User
+    public class User : EntityBase
     {
         public int Id { get; set; }
         public string Login { get; set; }

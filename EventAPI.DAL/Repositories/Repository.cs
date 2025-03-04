@@ -1,10 +1,11 @@
 ﻿using EventsAPI.DAL.Data;
+using EventsAPI.DAL.Entities;
 using EventsAPI.DAL.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace EventsAPI.DAL.Repositories
 {
-    public class Repository<T> : IRepository<T> where T : class
+    public class Repository<T> : IRepository<T> where T : EntityBase, new()
     {
         private readonly ApplicationContext _context;
         protected readonly DbSet<T> _dbSet;
@@ -32,12 +33,9 @@ namespace EventsAPI.DAL.Repositories
 
         public async Task<T?> DeleteAsync(int id, CancellationToken ct = default)
         {
-            var entity = await _dbSet.FindAsync(id, ct);
-            if (entity == null)
-            {
-                return entity;
-            }
+            var entity = new T { Id = id };
 
+            _dbSet.Attach(entity);
             _dbSet.Remove(entity);
             await _context.SaveChangesAsync(ct);
 
